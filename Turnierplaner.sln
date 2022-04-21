@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32228.343
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Turnierplaner", "Turnierplaner\Turnierplaner.csproj", "{DBD48426-2DBB-47C3-8653-242C23C24A03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TurnierLibrary", "TurnierLibrary\TurnierLibrary.csproj", "{BA3E63CE-562C-444B-8ECF-82590356B0CE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DBD48426-2DBB-47C3-8653-242C23C24A03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBD48426-2DBB-47C3-8653-242C23C24A03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBD48426-2DBB-47C3-8653-242C23C24A03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBD48426-2DBB-47C3-8653-242C23C24A03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA3E63CE-562C-444B-8ECF-82590356B0CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA3E63CE-562C-444B-8ECF-82590356B0CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA3E63CE-562C-444B-8ECF-82590356B0CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA3E63CE-562C-444B-8ECF-82590356B0CE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12783D01-931A-46DF-8D01-C0374B515CB4}
+	EndGlobalSection
+EndGlobal
