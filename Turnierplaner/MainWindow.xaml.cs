@@ -24,15 +24,16 @@ namespace Turnierplaner
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<Mannschaft> mannschaften = new List<Mannschaft>();
+        List<Mannschaft> ddlMannschaftenList;
         List<Position> ddlPositionList;
+        List<Spieler> ddlKapitaenList;
 
         public MainWindow()
         {
             InitializeComponent();
-            ddlPositionList = new List<Position>();
             PopulatePositionCheckbox();
-            BindPositionDropDown();
+            PopulateMannschaften();
+            PopulateKapitaen();
         }
 
         #region DB Befüllen
@@ -73,12 +74,45 @@ namespace Turnierplaner
             if(dpEntstehungsjahr.SelectedDate != null)
                 mannschaft.Entstehungsjahr = dpEntstehungsjahr.DisplayDate;
 
+            if (ddlMannschaftenKapitaen.Text != null)
+            {
+                foreach(Spieler spieler in ddlKapitaenList)
+                {
+                    if (string.Equals(spieler.Name, ddlMannschaftenKapitaen.Text))
+                    {
+                        mannschaft.Kapitan = spieler.Id;
+                    }
+                }
+            }
+
             AccessMannschaften.StoreMannschaft(mannschaft);
 
             tbxMannschaftenName.Text = "";
             tbxMannschaftenKürzel.Text = "";
             dpEntstehungsjahr.SelectedDate = null;
+            ddlMannschaftenKapitaen.Text = "";
+
+            PopulateMannschaften();
         }
+
+        private void BindKapitaenDropDown()
+        {
+            ddlMannschaftenKapitaen.ItemsSource = ddlKapitaenList;
+        }
+
+        private void PopulateKapitaen()
+        {
+            try
+            {
+                ddlKapitaenList = AccessSpieler.LoadSpielerAlphabetical();
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+            BindKapitaenDropDown();
+        }
+
         #endregion Mannschaften
 
         #region Spieler
@@ -113,16 +147,36 @@ namespace Turnierplaner
 
             spieler.Vorname = tbxSpielerVorname.Text;
             spieler.Nachname = tbxSpielerNachname.Text;
-
             if ( ! String.IsNullOrEmpty(tbxSpielerTrikotnummer.Text))
             {
                 spieler.Trikotnummer = int.Parse(tbxSpielerTrikotnummer.Text);
+            }
+            if (!String.IsNullOrEmpty(ddlSpielerMannschaften.Text))
+            {
+                foreach(Mannschaft mannschaft in ddlMannschaftenList)
+                {
+                    if(string.Equals(mannschaft.Name, ddlSpielerMannschaften.Text))
+                    {
+                        spieler.MannschaftsId = mannschaft.Id;
+                    }
+                }
             }
                 
 
             try
             {
-                AccessSpieler.StoreSpieler(spieler);
+                spieler.Id = AccessSpieler.StoreSpieler(spieler);
+
+                if(spieler.Id != null)
+                {
+                    foreach(Position pos in ddlPositionList)
+                    {
+                        if (pos.Check_Status)
+                        {
+                            AccessSpieltAuf.StoreSpieltAuf((int)spieler.Id, (int)pos.Id);
+                        }
+                    }
+                }
             }
             catch (Exception exep)
             {
@@ -132,6 +186,10 @@ namespace Turnierplaner
             tbxSpielerVorname.Text = "";
             tbxSpielerNachname.Text = "";
             tbxSpielerTrikotnummer.Text = "";
+            PopulatePositionCheckbox();
+            ddlSpielerMannschaften.Text = "";
+
+            PopulateKapitaen();
         }
 
         private void tbxSpielerTrikotnummer_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -142,13 +200,23 @@ namespace Turnierplaner
 
         private void PopulatePositionCheckbox()
         {
-            List<Position> dbPositions = AccessPosition.LoadPositionen();
-
-            foreach (Position pos in dbPositions)
+            try
             {
-                pos.Check_Status = false;
-                ddlPositionList.Add(pos);
+                List<Position> dbPositions = AccessPosition.LoadPositionen();
+
+                ddlPositionList = new List<Position>();
+
+                foreach (Position pos in dbPositions)
+                {
+                    pos.Check_Status = false;
+                    ddlPositionList.Add(pos);
+                }
             }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+            BindPositionDropDown();
         }
 
         private void BindPositionDropDown()
@@ -156,10 +224,26 @@ namespace Turnierplaner
             ddlPosition.ItemsSource = ddlPositionList;
         }
 
+        private void BindMannschaftenDropDown()
+        {
+            ddlSpielerMannschaften.ItemsSource = ddlMannschaftenList;
+        }
 
+        private void PopulateMannschaften()
+        {
+            try
+            {
+                ddlMannschaftenList = AccessMannschaften.LoadMannschaftenAlphabetical();
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+            BindMannschaftenDropDown();
+        }
         #endregion Spieler
 
         #endregion DB Befüllen
-        
+
     }
 }
