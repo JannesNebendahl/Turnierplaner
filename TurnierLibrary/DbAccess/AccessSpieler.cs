@@ -9,19 +9,26 @@ namespace TurnierLibrary
 {
     public class AccessSpieler : SqliteDataAccess
     {
-        public static void StoreSpieler(Spieler spieler)
+        public static int? StoreSpieler(Spieler spieler)
         {
-            try
+            int? id;
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+                cnn.Open();
+                using(var cmd = cnn.CreateCommand())
                 {
-                    cnn.Execute("INSERT INTO Spieler (Vorname, Nachname, Trikotnummer) VALUES (@Vorname, @Nachname, @Trikotnummer)", spieler);
+                    cmd.CommandTimeout = 0;
+                    cmd.CommandText =   "INSERT INTO Spieler (Vorname, Nachname, Trikotnummer)" +
+                                        "VALUES (@Vorname, @Nachname, @Trikotnummer);" +
+                                        "SELECT last_insert_rowid();";
+                    cmd.Parameters.Add(new SQLiteParameter("@Vorname", spieler.Vorname));
+                    cmd.Parameters.Add(new SQLiteParameter("@Nachname", spieler.Nachname));
+                    cmd.Parameters.Add(new SQLiteParameter("@Trikotnummer", spieler.Trikotnummer));
+                    var result = cmd.ExecuteScalar();
+                    id = Convert.ToInt32(result);
                 }
             }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
-            }
+            return id;
         }
     }
 }

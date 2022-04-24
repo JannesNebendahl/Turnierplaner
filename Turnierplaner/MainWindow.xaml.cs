@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TurnierLibrary;
 using TurnierLibrary.DbAccess;
+using TurnierLibrary.TabelModel;
 
 namespace Turnierplaner
 {
@@ -24,7 +25,6 @@ namespace Turnierplaner
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<Mannschaft> mannschaften = new List<Mannschaft>();
         List<Position> ddlPositionList;
 
         public MainWindow()
@@ -73,7 +73,14 @@ namespace Turnierplaner
             if(dpEntstehungsjahr.SelectedDate != null)
                 mannschaft.Entstehungsjahr = dpEntstehungsjahr.DisplayDate;
 
-            AccessMannschaften.StoreMannschaft(mannschaft);
+            try
+            {
+                AccessMannschaften.StoreMannschaft(mannschaft);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
 
             tbxMannschaftenName.Text = "";
             tbxMannschaftenKürzel.Text = "";
@@ -118,11 +125,25 @@ namespace Turnierplaner
             {
                 spieler.Trikotnummer = int.Parse(tbxSpielerTrikotnummer.Text);
             }
-                
-
+            
             try
             {
-                AccessSpieler.StoreSpieler(spieler);
+                spieler.Id = AccessSpieler.StoreSpieler(spieler);
+
+                if(spieler.Id != null)
+                {
+                    SpieltAuf spieltAuf = new SpieltAuf();
+                    spieltAuf.SpielerId = (int)spieler.Id;
+
+                    foreach (Position pos in ddlPositionList)
+                    {
+                        if (pos.Check_Status == true)
+                        {
+                            spieltAuf.PositionId = pos.Id;
+                            AccessSpieltAuf.StoreSpieltAuf(spieltAuf);
+                        }
+                    }
+                }
             }
             catch (Exception exep)
             {
