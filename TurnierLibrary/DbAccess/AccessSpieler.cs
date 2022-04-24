@@ -16,28 +16,22 @@ namespace TurnierLibrary
                          "VALUES (@Vorname, @Nachname, @Trikotnummer, @MannschaftsId);" +
                          "SELECT last_insert_rowid();";
 
-            try
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
             {
-                using (var connection = new SQLiteConnection(LoadConnectionString()))
+                connection.Open();
+                using (var command = connection.CreateCommand())
                 {
-                    connection.Open();
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandTimeout = 0;
-                        command.CommandText = sql;
-                        command.Parameters.Add(new SQLiteParameter("@Vorname", spieler.Vorname));
-                        command.Parameters.Add(new SQLiteParameter("@Nachname", spieler.Nachname));
-                        command.Parameters.Add(new SQLiteParameter("@Trikotnummer", spieler.Trikotnummer));
-                        command.Parameters.Add(new SQLiteParameter("@MannschaftsId", spieler.MannschaftsId));
-                        var result = command.ExecuteScalar();
-                        id = Convert.ToInt32(result);
-                    }
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    command.Parameters.Add(new SQLiteParameter("@Vorname", spieler.Vorname));
+                    command.Parameters.Add(new SQLiteParameter("@Nachname", spieler.Nachname));
+                    command.Parameters.Add(new SQLiteParameter("@Trikotnummer", spieler.Trikotnummer));
+                    command.Parameters.Add(new SQLiteParameter("@MannschaftsId", spieler.MannschaftsId));
+                    var result = command.ExecuteScalar();
+                    id = Convert.ToInt32(result);
                 }
             }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
-            }
+
             return id;
         }
 
@@ -47,18 +41,32 @@ namespace TurnierLibrary
                          "FROM Spieler " +
                          "ORDER BY Vorname ASC;";
 
-            try
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    var output = cnn.Query<Spieler>(sql, new DynamicParameters());
-                    return output.AsList();
-                }
+                var output = cnn.Query<Spieler>(sql, new DynamicParameters());
+                return output.AsList();
             }
-            catch (Exception e)
+        }
+
+        public static void ChangeMannschaft(int spielerId, int newMannschaftsId)
+        {
+            string sql = "UPDATE Spieler " +
+                         "SET MannschaftsId = @newMannschaftsId " +
+                         "WHERE Id == @SpielerId; ";
+
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
             {
-                Console.Error.Write(e.Message);
-                return new List<Spieler>();
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    command.Parameters.Add(new SQLiteParameter("@newMannschaftsId", newMannschaftsId));
+                    command.Parameters.Add(new SQLiteParameter("@SpielerId", spielerId));
+                    var result = command.ExecuteNonQuery();
+                    if (result <= 0)
+                        throw new Exception("Can't change MannschaftsId of Mannschaft (Id=" + spielerId + ") to MannschaftsId:" + newMannschaftsId);
+                }
             }
         }
     }

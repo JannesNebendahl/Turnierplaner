@@ -39,7 +39,7 @@
                             <Label Content="Entstehungsjahr: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
                             <DatePicker x:Name="dpEntstehungsjahr" Grid.Row="2" Grid.Column="1" Height="24" Margin="0,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
                             <Label Content="Kapitän: " Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <ComboBox Grid.Row="3" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlMannschaftenKapitaen" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
+                            <ComboBox Grid.Row="3" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="cbMannschaftenKapitan" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <Label Name="ddlMannschaftenKapitaenItem" Content="{Binding Name}"/>
@@ -72,7 +72,7 @@
                             <Label Content="Trikotnummer: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
                             <TextBox x:Name="tbxSpielerTrikotnummer" Grid.Row="2" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" PreviewTextInput="tbxSpielerTrikotnummer_PreviewTextInput"></TextBox>
                             <Label Content="Positionen: " Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <ComboBox Grid.Row="3" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlPosition" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True">
+                            <ComboBox Grid.Row="3" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="cbSpielerPosition" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <CheckBox Name="chkPosition" Content="{Binding Name}" IsChecked="{Binding Check_Status}" CommandParameter="{Binding Id}"/>
@@ -80,7 +80,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <Label Content="Mannschaft: " Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <ComboBox Grid.Row="4" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlSpielerMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
+                            <ComboBox Grid.Row="4" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="cbSpielerMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <Label Name="ddlSpielerMannschaftenItem" Content="{Binding Name}"/>
@@ -116,7 +116,58 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-            
+            <TabItem Header="DB Ändern" Height="22" Margin="-2,-2,-2,0" VerticalAlignment="Top">
+                <Grid HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Spieler transferieren" Grid.Row="0" Grid.Column="0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <Label Content="Spieler: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <Border x:Name="bTransferSpielerBorder" BorderThickness="1" Grid.Row="0" Grid.Column="1" Height="26" Width="202" Margin="0,0,5,0" HorizontalAlignment="Left">
+                                <ComboBox Height="24" Width="200" HorizontalAlignment="Left" Name="cbTransferSpieler" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True" SelectionChanged="cbTransferSpieler_SelectionChanged">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Label Name="ddlTransferSpielerItem" Content="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Border>
+                            <Label Content="Aktuelle Mannschaft: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxTransferAktuelleMannschaft" Grid.Row="1" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" IsReadOnly="True"></TextBox>
+                            <Label Content="Neue Mannschaft: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <Border x:Name="bTransferMannschaftenBorder" BorderThickness="1" Grid.Row="2" Grid.Column="1" Height="26" Width="202" Margin="0,0,5,0" HorizontalAlignment="Left">
+                                <ComboBox Height="24" Width="200" HorizontalAlignment="Left" Name="cbTransferMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Label Name="ddlSpielerMannschaftenItem" Content="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Border>
+                            <Button x:Name="btnTransferSpieler" Grid.Row="3" Grid.Column="1" Height="24" Margin="0,5,5,5" Click="btnTransferSpieler_Click" >Transfer Spieler</Button>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
         </TabControl>
 
     </Grid>

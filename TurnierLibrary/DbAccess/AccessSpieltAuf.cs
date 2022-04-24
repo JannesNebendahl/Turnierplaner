@@ -12,26 +12,19 @@ namespace TurnierLibrary.DbAccess
             string sql = "INSERT INTO SpieltAuf(SpielerId, PositionId)" +
                          "VALUES (@SpielerId, @PositionId);";
 
-            try
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
             {
-                using (var connection = new SQLiteConnection(LoadConnectionString()))
+                connection.Open();
+                using (var command = connection.CreateCommand())
                 {
-                    connection.Open();
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandTimeout = 0;
-                        command.CommandText = sql;
-                        command.Parameters.Add(new SQLiteParameter("@SpielerId", spielerId));
-                        command.Parameters.Add(new SQLiteParameter("@PositionId", positionId));
-                        var result = command.ExecuteNonQuery();
-                        if (result <= 0)
-                            throw new Exception("Can't store SpieltAuf Relation " + spielerId + "<->" + positionId);
-                    }
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    command.Parameters.Add(new SQLiteParameter("@SpielerId", spielerId));
+                    command.Parameters.Add(new SQLiteParameter("@PositionId", positionId));
+                    var result = command.ExecuteNonQuery();
+                    if (result <= 0)
+                        throw new Exception("Can't store SpieltAuf Relation " + spielerId + "<->" + positionId);
                 }
-            }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
             }
         }
     }

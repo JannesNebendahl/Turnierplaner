@@ -20,26 +20,23 @@ using TurnierLibrary.TabelModel;
 
 namespace Turnierplaner
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        List<Mannschaft> ddlMannschaftenList;
-        List<Position> ddlPositionList;
-        List<Spieler> ddlKapitaenList;
-
         public MainWindow()
         {
             InitializeComponent();
             PopulatePositionCheckbox();
             PopulateMannschaften();
             PopulateKapitaen();
+            PopulateTransferSpieler();
+            PopulateTransferMannschaften();
         }
 
         #region DB Befüllen
 
         #region Mannschaften
+
+        List<Spieler> ddlMannschaftKapitaen;
 
         private bool missingMannschaftInput()
         {
@@ -75,11 +72,11 @@ namespace Turnierplaner
             if(dpEntstehungsjahr.SelectedDate != null)
                 mannschaft.Entstehungsjahr = dpEntstehungsjahr.DisplayDate;
 
-            if (ddlMannschaftenKapitaen.Text != null)
+            if (cbMannschaftenKapitan.Text != null)
             {
-                foreach(Spieler spieler in ddlKapitaenList)
+                foreach(Spieler spieler in ddlMannschaftKapitaen)
                 {
-                    if (string.Equals(spieler.Name, ddlMannschaftenKapitaen.Text))
+                    if (string.Equals(spieler.Name, cbMannschaftenKapitan.Text))
                     {
                         mannschaft.Kapitan = spieler.Id;
                     }
@@ -91,21 +88,22 @@ namespace Turnierplaner
             tbxMannschaftenName.Text = "";
             tbxMannschaftenKürzel.Text = "";
             dpEntstehungsjahr.SelectedDate = null;
-            ddlMannschaftenKapitaen.Text = "";
+            cbMannschaftenKapitan.Text = "";
 
             PopulateMannschaften();
+            PopulateTransferMannschaften();
         }
 
         private void BindKapitaenDropDown()
         {
-            ddlMannschaftenKapitaen.ItemsSource = ddlKapitaenList;
+            cbMannschaftenKapitan.ItemsSource = ddlMannschaftKapitaen;
         }
 
         private void PopulateKapitaen()
         {
             try
             {
-                ddlKapitaenList = AccessSpieler.LoadSpielerAlphabetical();
+                ddlMannschaftKapitaen = AccessSpieler.LoadSpielerAlphabetical();
             }
             catch (Exception exep)
             {
@@ -117,6 +115,9 @@ namespace Turnierplaner
         #endregion Mannschaften
 
         #region Spieler
+
+        List<Mannschaft> ddlSpielerMannschaften;
+        List<Position> ddlSpielerPosition;
 
         private bool missingSpielerInput()
         {
@@ -152,11 +153,11 @@ namespace Turnierplaner
             {
                 spieler.Trikotnummer = int.Parse(tbxSpielerTrikotnummer.Text);
             }
-            if (!String.IsNullOrEmpty(ddlSpielerMannschaften.Text))
+            if (!String.IsNullOrEmpty(cbSpielerMannschaften.Text))
             {
-                foreach(Mannschaft mannschaft in ddlMannschaftenList)
+                foreach(Mannschaft mannschaft in ddlSpielerMannschaften)
                 {
-                    if(string.Equals(mannschaft.Name, ddlSpielerMannschaften.Text))
+                    if(string.Equals(mannschaft.Name, cbSpielerMannschaften.Text))
                     {
                         spieler.MannschaftsId = mannschaft.Id;
                     }
@@ -170,7 +171,7 @@ namespace Turnierplaner
 
                 if(spieler.Id != null)
                 {
-                    foreach(Position pos in ddlPositionList)
+                    foreach(Position pos in ddlSpielerPosition)
                     {
                         if (pos.Check_Status)
                         {
@@ -188,7 +189,7 @@ namespace Turnierplaner
             tbxSpielerNachname.Text = "";
             tbxSpielerTrikotnummer.Text = "";
             PopulatePositionCheckbox();
-            ddlSpielerMannschaften.Text = "";
+            cbSpielerMannschaften.Text = "";
 
             PopulateKapitaen();
         }
@@ -205,12 +206,12 @@ namespace Turnierplaner
             {
                 List<Position> dbPositions = AccessPosition.LoadPositionen();
 
-                ddlPositionList = new List<Position>();
+                ddlSpielerPosition = new List<Position>();
 
                 foreach (Position pos in dbPositions)
                 {
                     pos.Check_Status = false;
-                    ddlPositionList.Add(pos);
+                    ddlSpielerPosition.Add(pos);
                 }
             }
             catch (Exception exep)
@@ -222,19 +223,19 @@ namespace Turnierplaner
 
         private void BindPositionDropDown()
         {
-            ddlPosition.ItemsSource = ddlPositionList;
+            cbSpielerPosition.ItemsSource = ddlSpielerPosition;
         }
 
         private void BindMannschaftenDropDown()
         {
-            ddlSpielerMannschaften.ItemsSource = ddlMannschaftenList;
+            cbSpielerMannschaften.ItemsSource = ddlSpielerMannschaften;
         }
 
         private void PopulateMannschaften()
         {
             try
             {
-                ddlMannschaftenList = AccessMannschaften.LoadMannschaftenAlphabetical();
+                ddlSpielerMannschaften = AccessMannschaften.LoadMannschaftenAlphabetical();
             }
             catch (Exception exep)
             {
@@ -295,6 +296,122 @@ namespace Turnierplaner
 
         #endregion DB Befüllen
 
+        #region DB Ändern
+
+        #region Spieler transferieren
+
+        List<Mannschaft> ddlTransferSpielerMannschaften;
+        List<Spieler> ddlTransferSpielerSpieler;
+
+        private bool missingTransferInput()
+        {
+            bool ret = false;
+
+            if (String.IsNullOrEmpty(cbTransferSpieler.Text))
+            {
+                bTransferSpielerBorder.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else bTransferSpielerBorder.BorderBrush = Brushes.Transparent;
+
+            if (String.IsNullOrEmpty(cbTransferMannschaften.Text))
+            {
+                bTransferMannschaftenBorder.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else bTransferMannschaftenBorder.BorderBrush = Brushes.Transparent;
+
+            return ret;
+        }
+
+        private void btnTransferSpieler_Click(object sender, RoutedEventArgs e)
+        {
+            if (missingTransferInput())
+                return;
+
+            Mannschaft newMannschaft = (Mannschaft)cbTransferMannschaften.SelectedItem;
+            Spieler selectedSpieler = (Spieler)cbTransferSpieler.SelectedItem;
+
+            try
+            {
+                AccessSpieler.ChangeMannschaft((int)selectedSpieler.Id, (int)newMannschaft.Id);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
+            tbxTransferAktuelleMannschaft.Text = "";
+            cbTransferMannschaften.Text = "";
+            cbTransferSpieler.Text = "";
+            PopulateTransferSpieler();
+        }
+
+        private void cbTransferSpieler_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbTransferSpieler.SelectedItem == null)
+                return;
+
+            Spieler selectedSpieler = (Spieler)cbTransferSpieler.SelectedItem;
+
+            if (selectedSpieler.MannschaftsId == null)
+            {
+                tbxTransferAktuelleMannschaft.Text = "vereinslos";
+            }
+            else
+            {
+                try
+                {
+                    Mannschaft currentMannschaft = AccessMannschaften.QueryById((int)selectedSpieler.MannschaftsId);
+                    tbxTransferAktuelleMannschaft.Text = currentMannschaft.Name;
+                }
+                catch (Exception exep)
+                {
+                    MessageBox.Show(exep.Message);
+                }
+            }
+        }
+
+        private void BindTransferSpielerDropDown()
+        {
+            cbTransferSpieler.ItemsSource = ddlTransferSpielerSpieler;
+        }
+
+        private void PopulateTransferSpieler()
+        {
+            try
+            {
+                ddlTransferSpielerSpieler = AccessSpieler.LoadSpielerAlphabetical();
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+            BindTransferSpielerDropDown();
+        }
+
+        private void BindTransferMannschaftenDropDown()
+        {
+            cbTransferMannschaften.ItemsSource = ddlTransferSpielerMannschaften;
+        }
+
+        private void PopulateTransferMannschaften()
+        {
+            try
+            {
+                ddlTransferSpielerMannschaften = AccessMannschaften.LoadMannschaftenAlphabetical();
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+            BindTransferMannschaftenDropDown();
+        }
+
+
+        #endregion Spieler transferieren
+
+        #endregion BD Ändern
 
     }
 }
