@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TurnierLibrary;
 using TurnierLibrary.DbAccess;
+using TurnierLibrary.TabelModel;
 
 namespace Turnierplaner
 {
@@ -243,7 +244,57 @@ namespace Turnierplaner
         }
         #endregion Spieler
 
+        #region Schiedsrichter
+
+        private bool missingSchiedsrichterInput()
+        {
+            bool ret = false;
+
+            if (String.IsNullOrEmpty(tbxSchiedsrichterVorname.Text))
+            {
+                tbxSchiedsrichterVorname.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else tbxSchiedsrichterVorname.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffabadb3");
+
+            if (String.IsNullOrEmpty(tbxSchiedsrichterNachname.Text))
+            {
+                tbxSchiedsrichterNachname.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else tbxSchiedsrichterNachname.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffabadb3");
+
+            return ret;
+        }
+
+        private void btnAddSchiedsrichter_Click(object sender, RoutedEventArgs e)
+        {
+            if (missingSchiedsrichterInput())
+                return;
+
+            Schiedsrichter schiedsrichter = new Schiedsrichter();
+
+            schiedsrichter.Vorname = tbxSchiedsrichterVorname.Text;
+            schiedsrichter.Nachname = tbxSchiedsrichterNachname.Text;
+            
+
+
+            try
+            {
+                AccessSchiedsrichter.StoreSchiedsrichter(schiedsrichter);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
+            tbxSchiedsrichterVorname.Text = "";
+            tbxSchiedsrichterNachname.Text = "";
+        }
+        #endregion
+
         #endregion DB Befüllen
+
 
     }
 }

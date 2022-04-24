@@ -23,7 +23,6 @@ namespace TurnierLibrary
                     connection.Open();
                     using (var command = connection.CreateCommand())
                     {
-
                         command.CommandTimeout = 0;
                         command.CommandText = sql;
                         command.Parameters.Add(new SQLiteParameter("@Vorname", spieler.Vorname));
