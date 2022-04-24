@@ -25,18 +25,84 @@ namespace Turnierplaner
         public MainWindow()
         {
             InitializeComponent();
-            PopulatePositionCheckbox();
+            PopulatePosition();
             PopulateMannschaften();
-            PopulateKapitaen();
-            PopulateTransferSpieler();
-            PopulateTransferMannschaften();
+            PopulateSpieler();
         }
+
+        #region DataBindings
+        List<Spieler> ddlSpieler;
+        List<Position> ddlPosition;
+        List<Mannschaft> ddlMannschaften;
+
+        private void BindSpielerDropDown()
+        {
+            cbMannschaftenKapitan.ItemsSource = ddlSpieler;
+            cbTransferSpieler.ItemsSource = ddlSpieler;
+        }
+
+        private void BindPositionDropDown()
+        {
+            cbSpielerPosition.ItemsSource = ddlPosition;
+        }
+        private void BindMannschaftenDropDown()
+        {
+            cbSpielerMannschaften.ItemsSource = ddlMannschaften;
+            cbTransferMannschaften.ItemsSource = ddlMannschaften;
+        }
+
+        private void PopulateMannschaften()
+        {
+            try
+            {
+                ddlMannschaften = AccessMannschaften.LoadMannschaftenAlphabetical();
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+            BindMannschaftenDropDown();
+        }
+
+        private void PopulateSpieler()
+        {
+            try
+            {
+                ddlSpieler = AccessSpieler.LoadSpielerAlphabetical();
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+            BindSpielerDropDown();
+        }
+
+        private void PopulatePosition()
+        {
+            try
+            {
+                List<Position> dbPositions = AccessPosition.LoadPositionen();
+
+                ddlPosition = new List<Position>();
+
+                foreach (Position pos in dbPositions)
+                {
+                    pos.Check_Status = false;
+                    ddlPosition.Add(pos);
+                }
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+            BindPositionDropDown();
+        }
+
+        #endregion DataBindings
 
         #region DB Befüllen
 
         #region Mannschaften
-
-        List<Spieler> ddlMannschaftKapitaen;
 
         private bool missingMannschaftInput()
         {
@@ -74,7 +140,7 @@ namespace Turnierplaner
 
             if (cbMannschaftenKapitan.Text != null)
             {
-                foreach(Spieler spieler in ddlMannschaftKapitaen)
+                foreach(Spieler spieler in ddlSpieler)
                 {
                     if (string.Equals(spieler.Name, cbMannschaftenKapitan.Text))
                     {
@@ -91,33 +157,13 @@ namespace Turnierplaner
             cbMannschaftenKapitan.Text = "";
 
             PopulateMannschaften();
-            PopulateTransferMannschaften();
         }
 
-        private void BindKapitaenDropDown()
-        {
-            cbMannschaftenKapitan.ItemsSource = ddlMannschaftKapitaen;
-        }
-
-        private void PopulateKapitaen()
-        {
-            try
-            {
-                ddlMannschaftKapitaen = AccessSpieler.LoadSpielerAlphabetical();
-            }
-            catch (Exception exep)
-            {
-                MessageBox.Show(exep.Message);
-            }
-            BindKapitaenDropDown();
-        }
+        
 
         #endregion Mannschaften
 
         #region Spieler
-
-        List<Mannschaft> ddlSpielerMannschaften;
-        List<Position> ddlSpielerPosition;
 
         private bool missingSpielerInput()
         {
@@ -155,7 +201,7 @@ namespace Turnierplaner
             }
             if (!String.IsNullOrEmpty(cbSpielerMannschaften.Text))
             {
-                foreach(Mannschaft mannschaft in ddlSpielerMannschaften)
+                foreach(Mannschaft mannschaft in ddlMannschaften)
                 {
                     if(string.Equals(mannschaft.Name, cbSpielerMannschaften.Text))
                     {
@@ -163,7 +209,6 @@ namespace Turnierplaner
                     }
                 }
             }
-                
 
             try
             {
@@ -171,7 +216,7 @@ namespace Turnierplaner
 
                 if(spieler.Id != null)
                 {
-                    foreach(Position pos in ddlSpielerPosition)
+                    foreach(Position pos in ddlPosition)
                     {
                         if (pos.Check_Status)
                         {
@@ -188,10 +233,10 @@ namespace Turnierplaner
             tbxSpielerVorname.Text = "";
             tbxSpielerNachname.Text = "";
             tbxSpielerTrikotnummer.Text = "";
-            PopulatePositionCheckbox();
+            PopulatePosition();
             cbSpielerMannschaften.Text = "";
 
-            PopulateKapitaen();
+            PopulateSpieler();
         }
 
         private void tbxSpielerTrikotnummer_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -200,49 +245,6 @@ namespace Turnierplaner
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private void PopulatePositionCheckbox()
-        {
-            try
-            {
-                List<Position> dbPositions = AccessPosition.LoadPositionen();
-
-                ddlSpielerPosition = new List<Position>();
-
-                foreach (Position pos in dbPositions)
-                {
-                    pos.Check_Status = false;
-                    ddlSpielerPosition.Add(pos);
-                }
-            }
-            catch (Exception exep)
-            {
-                MessageBox.Show(exep.Message);
-            }
-            BindPositionDropDown();
-        }
-
-        private void BindPositionDropDown()
-        {
-            cbSpielerPosition.ItemsSource = ddlSpielerPosition;
-        }
-
-        private void BindMannschaftenDropDown()
-        {
-            cbSpielerMannschaften.ItemsSource = ddlSpielerMannschaften;
-        }
-
-        private void PopulateMannschaften()
-        {
-            try
-            {
-                ddlSpielerMannschaften = AccessMannschaften.LoadMannschaftenAlphabetical();
-            }
-            catch (Exception exep)
-            {
-                MessageBox.Show(exep.Message);
-            }
-            BindMannschaftenDropDown();
-        }
         #endregion Spieler
 
         #region Schiedsrichter
@@ -300,9 +302,6 @@ namespace Turnierplaner
 
         #region Spieler transferieren
 
-        List<Mannschaft> ddlTransferSpielerMannschaften;
-        List<Spieler> ddlTransferSpielerSpieler;
-
         private bool missingTransferInput()
         {
             bool ret = false;
@@ -344,7 +343,7 @@ namespace Turnierplaner
             tbxTransferAktuelleMannschaft.Text = "";
             cbTransferMannschaften.Text = "";
             cbTransferSpieler.Text = "";
-            PopulateTransferSpieler();
+            PopulateSpieler();
         }
 
         private void cbTransferSpieler_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -371,43 +370,6 @@ namespace Turnierplaner
                 }
             }
         }
-
-        private void BindTransferSpielerDropDown()
-        {
-            cbTransferSpieler.ItemsSource = ddlTransferSpielerSpieler;
-        }
-
-        private void PopulateTransferSpieler()
-        {
-            try
-            {
-                ddlTransferSpielerSpieler = AccessSpieler.LoadSpielerAlphabetical();
-            }
-            catch (Exception exep)
-            {
-                MessageBox.Show(exep.Message);
-            }
-            BindTransferSpielerDropDown();
-        }
-
-        private void BindTransferMannschaftenDropDown()
-        {
-            cbTransferMannschaften.ItemsSource = ddlTransferSpielerMannschaften;
-        }
-
-        private void PopulateTransferMannschaften()
-        {
-            try
-            {
-                ddlTransferSpielerMannschaften = AccessMannschaften.LoadMannschaftenAlphabetical();
-            }
-            catch (Exception exep)
-            {
-                MessageBox.Show(exep.Message);
-            }
-            BindTransferMannschaftenDropDown();
-        }
-
 
         #endregion Spieler transferieren
 
