@@ -11,11 +11,21 @@ namespace TurnierLibrary.DbAccess
     {
         public static List<Position> LoadPositionen()
         {
-            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            try
             {
-                var output = cnn.Query<Position>("SELECT * FROM Positionen", new DynamicParameters());
-                return output.AsList();
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+                {
+                    var output = cnn.Query<Position>("SELECT * FROM Positionen", new DynamicParameters());
+                    return output.AsList();
+                }
             }
+            catch (Exception e)
+            {
+                Console.Error.Write(e.Message);
+                return new List<Position>();
+            }
+
+            
         }
     }
 }

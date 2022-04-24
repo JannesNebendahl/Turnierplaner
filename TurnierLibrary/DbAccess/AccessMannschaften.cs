@@ -12,18 +12,33 @@ namespace TurnierLibrary
     {
         public static List<Mannschaft> LoadMannschaften()
         {
-            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            try
             {
-                var output = cnn.Query<Mannschaft>("SELECT * FROM Mannschaften", new DynamicParameters());
-                return output.AsList();
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+                {
+                    var output = cnn.Query<Mannschaft>("SELECT * FROM Mannschaften", new DynamicParameters());
+                    return output.AsList();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Error.Write(e.Message);
+                return new List<Mannschaft>();
             }
         }
 
         public static void StoreMannschaft(Mannschaft mannschaft)
         {
-            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            try
             {
-                cnn.Execute("INSERT INTO Mannschaften (Name, Kuerzel, Entstehungsjahr) VALUES (@Name, @Kuerzel, @Entstehungsjahr)", mannschaft);
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+                {
+                    cnn.Execute("INSERT INTO Mannschaften (Name, Kuerzel, Entstehungsjahr) VALUES (@Name, @Kuerzel, @Entstehungsjahr)", mannschaft);
+                }
+            }
+            catch(Exception e) 
+            {
+                Console.Error.Write(e.Message);
             }
         }
 

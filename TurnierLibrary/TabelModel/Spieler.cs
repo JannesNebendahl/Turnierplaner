@@ -6,7 +6,7 @@ namespace TurnierLibrary
 {
     public class Spieler
     {
-        public int? Id { get; set; }
+        public string Id { get; set; }
         public string Vorname { get; set; }
         public string Nachname { get; set; }
         public int? Trikotnummer { get; set; }
