@@ -41,6 +41,7 @@ namespace Turnierplaner
         {
             cbMannschaftenKapitan.ItemsSource = ddlSpieler;
             cbTransferSpieler.ItemsSource = ddlSpieler;
+            cbChangePositionSpieler.ItemsSource = ddlSpieler;
         }
 
         private void BindPositionDropDown()
@@ -224,7 +225,7 @@ namespace Turnierplaner
                     {
                         if (pos.Check_Status)
                         {
-                            AccessSpieltAuf.StoreSpieltAuf((int)spieler.Id, (int)pos.Id);
+                            AccessSpieltAuf.AddRelation((int)spieler.Id, (int)pos.Id);
                         }
                     }
                 }
@@ -377,7 +378,131 @@ namespace Turnierplaner
 
         #endregion Spieler transferieren
 
+        #region Spieler position ändern
+        private bool missingPositionChangeInput()
+        {
+            bool ret = false;
+
+            if (String.IsNullOrEmpty(cbChangePositionSpieler.Text))
+            {
+                bChangePositionSpielerBorder.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else bChangePositionSpielerBorder.BorderBrush = Brushes.Transparent;
+
+            return ret;
+        }
+
+        private void btnChangeSpielerPosition_Click(object sender, RoutedEventArgs e)
+        {
+            if (missingPositionChangeInput())
+                return;
+
+            Spieler selectedSpieler = (Spieler)cbChangePositionSpieler.SelectedItem;
+            List<Position> positionsOfPlayer = new List<Position>();
+            List<Position> selectedPositions = new List<Position>();
+
+            try
+            {
+                positionsOfPlayer = AccessSpieltAuf.GetPositions(selectedSpieler);
+                selectedPositions = (List<Position>)cbChangePosition.ItemsSource;
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
+            List<Position> addToSpieltAuf = new List<Position>();
+            List<Position> removeFromSpieltAuf = new List<Position>();
+
+            for(int i=0; i<positionsOfPlayer.Count; i++)
+            {
+                positionsOfPlayer[i].Check_Status = true;
+            }
+
+            foreach(Position selPos in selectedPositions)
+            {
+                if (selPos.Check_Status)
+                {
+                    if (!positionsOfPlayer.Any(p => p.Id == selPos.Id))
+                    {
+                        addToSpieltAuf.Add(selPos);
+                    }
+                }
+                else
+                {
+                    if (positionsOfPlayer.Any(p => p.Id == selPos.Id))
+                    {
+                        removeFromSpieltAuf.Add(selPos);
+                    }
+                }
+            }
+
+            foreach(Position pos in addToSpieltAuf)
+            {
+                try
+                {
+                    AccessSpieltAuf.AddRelation((int)selectedSpieler.Id, (int)pos.Id);
+                }
+                catch (Exception exep)
+                {
+                    MessageBox.Show(exep.Message);
+                }
+            }
+            foreach(Position pos in removeFromSpieltAuf)
+            {
+                try
+                {
+                    AccessSpieltAuf.DeleteRelation((int)selectedSpieler.Id, (int)pos.Id);
+                }
+                catch (Exception exep)
+                {
+                    MessageBox.Show(exep.Message);
+                }
+            }
+
+            cbChangePositionSpieler.Text = "";
+            cbChangePosition.ItemsSource = null;
+        }
+
+        private void cbChangePositionSpieler_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbChangePositionSpieler.SelectedItem == null)
+                return;
+
+            Spieler selectedSpieler = (Spieler)cbChangePositionSpieler.SelectedItem;
+            List<Position> positionsOfPlayer = new List<Position>();
+
+            try
+            {
+                positionsOfPlayer = AccessSpieltAuf.GetPositions(selectedSpieler);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
+            PopulatePosition();
+            List<Position> ddlPositionsOfPlayer = ddlPosition;
+
+            foreach(Position pos in positionsOfPlayer)
+            {
+                for(int i=0; i<ddlPositionsOfPlayer.Count; i++)
+                {
+                    if(ddlPositionsOfPlayer[i].Id == pos.Id)
+                    {
+                        ddlPositionsOfPlayer[i].Check_Status = true;
+                        break;
+                    }
+                }
+            }
+
+            cbChangePosition.ItemsSource = ddlPositionsOfPlayer;
+        }
+        #endregion
+
         #endregion BD Ändern
+
         #region Spiel erstellen
 
         #region Spiel
@@ -463,7 +588,15 @@ namespace Turnierplaner
                 return;
             }
 
-            AccessSpiel.StoreSpiel(spiel);
+            try
+            {
+                AccessSpiel.StoreSpiel(spiel);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
             tbxSpieltag.Text = "";
             dpDatum.SelectedDate = null;
             tbxZuschaueranzahl.Text = "";
@@ -475,5 +608,7 @@ namespace Turnierplaner
         #endregion Spiel
 
         #endregion Spiel erstellen
+
+        
     }
 }

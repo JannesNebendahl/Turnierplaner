@@ -63,13 +63,12 @@ namespace TurnierLibrary
             string sql = "SELECT *" +
                          "FROM Mannschaften " +
                          "WHERE Id==@Id;";
+
             using (var cnn = new SQLiteConnection(LoadConnectionString()))
             {
                 DynamicParameters dynamicParameters = new DynamicParameters();
                 dynamicParameters.Add("@Id", Id);
                 var output = cnn.Query<Mannschaft>(sql, dynamicParameters).AsList();
-                if (output.Count < 1)
-                    throw new Exception("Found no Mannschaft with Id:" + Id);
                 if (output.Count > 1)
                     throw new Exception("Found more than one Mannschaft with Id: " + Id);
                 return output[0];
