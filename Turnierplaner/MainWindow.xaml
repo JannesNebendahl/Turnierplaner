@@ -91,6 +91,35 @@
                             <Label Content="requierd *" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" FontStyle="Italic" Foreground="Gray" Margin="-10,0,0,0"/>
                         </Grid>
                     </GroupBox>
+                    <GroupBox Header="Trainer zu DB hinzufügen" Grid.Row="0" Grid.Column="1">
+                        <Grid HorizontalAlignment="Right">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <Label x:Name="lblTrainerName" Content="Trainer Vorname*: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxTrainerVorname" Grid.Row="0" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5"></TextBox>
+                            <Label x:Name="lblTrainerNachname" Content="Trainer Nachname*: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxTrainerNachname" Grid.Row="2" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5"></TextBox>
+                            <Label x:Name="TrainerMannschaft" Content="Mannschaft*: " Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlTrainerMannschaft" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True">
+
+                            </ComboBox>
+                            <Label x:Name="TrainerAmtsAntritt" Content="Amtsantritt: " Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <DatePicker x:Name="dpTrainerAmtsantritt" Grid.Row="4" Grid.Column="1" Height="24" Margin="0,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                            <Label Content="requierd *" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" FontStyle="Italic" Foreground="Gray"/>
+                            <Button x:Name="btnAddTrainer" Grid.Row="5" Grid.Column="1" Height="24" Margin="0,5,5,5" Click="btnAddTrainer_Click" >Trainer hinzufügen</Button>
+                        </Grid>
+                    </GroupBox>
                     <GroupBox Header="Schiedsrichter zu DB hinzufügen" Grid.Row="1" Grid.Column="1">
                         <Grid HorizontalAlignment="Right">
                             <Grid.ColumnDefinitions>

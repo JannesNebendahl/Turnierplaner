@@ -67,6 +67,7 @@ namespace Turnierplaner
                 MessageBox.Show(exep.Message);
             }
             BindMannschaftenDropDown();
+            BindTrainerMannschaftenDropDown();
         }
 
         private void PopulateSpieler()
@@ -251,6 +252,74 @@ namespace Turnierplaner
         }
 
         #endregion Spieler
+
+        #region Trainer
+
+        private void btnAddTrainer_Click(object sender, RoutedEventArgs e)
+        {
+
+            Trainer trainer = new Trainer();
+
+            if (checkTrainerInput())
+            {
+                try
+                {
+                    trainer.Vorname = tbxTrainerVorname.Text;
+                    trainer.Nachname = tbxTrainerNachname.Text;
+                    foreach (Mannschaft mannschaft in ddlMannschaften)
+                    {
+                        if (string.Equals(mannschaft.Name, ddlTrainerMannschaft.Text))
+                        {
+                            trainer.Mannschaft = mannschaft.Id;
+                        }
+                    }
+                    trainer.Amtsantritt = dpTrainerAmtsantritt.DisplayDate;
+                    AccessTrainer.StoreTrainer(trainer);
+
+                    tbxTrainerVorname.Text = "";
+                    tbxTrainerNachname.Text = "";
+                    ddlTrainerMannschaft.Text = "";
+                    dpTrainerAmtsantritt.SelectedDate = null;
+                }
+                catch
+                {
+                    MessageBox.Show("Fehlerhafte Eingabe.");
+                }
+
+            }
+        }
+
+        private bool checkTrainerInput()
+        {
+            bool returnValue = true;
+
+            if (!String.IsNullOrEmpty(tbxTrainerVorname.Text)) tbxTrainerVorname.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffabadb3");
+            else
+            {
+                tbxTrainerVorname.BorderBrush = Brushes.Red;
+                returnValue = false;
+            }
+            if (!String.IsNullOrEmpty(tbxTrainerNachname.Text)) tbxTrainerNachname.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffabadb3");
+            else
+            {
+                tbxTrainerNachname.BorderBrush = Brushes.Red;
+                returnValue = false;
+            }
+
+            if (!String.IsNullOrEmpty(ddlTrainerMannschaft.Text)) ddlTrainerMannschaft.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffabadb3");
+            else
+            {
+                ddlTrainerMannschaft.BorderBrush = Brushes.Red;
+                returnValue = false;
+            }
+            return returnValue;
+        }
+
+        private void BindTrainerMannschaftenDropDown()
+        {
+            ddlTrainerMannschaft.ItemsSource = ddlMannschaften;
+        }
+        #endregion
 
         #region Schiedsrichter
 

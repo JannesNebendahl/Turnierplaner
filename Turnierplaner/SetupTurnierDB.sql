@@ -48,6 +48,20 @@ CREATE TABLE Spiel
     AuswaertsmannschaftsID  INTEGER NOT NULL REFERENCES Mannschaften
 );
 
+create table Trainer
+(
+    TrainerID   integer not null
+        constraint Trainer_pk
+            primary key,
+    Vorname     varchar not null,
+    Nachname    varchar not null,
+    Amtsantritt date,
+    Mannschaft  integer not null
+);
+
+create unique index Trainer_TrainerID_uindex
+    on Trainer (TrainerID);
+
 --Insert default Data
 INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (1, 'Torwart', 'TW');
 INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (2, 'Rechtsverteidiger', 'RV');
