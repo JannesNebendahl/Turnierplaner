@@ -54,6 +54,7 @@ namespace Turnierplaner
             cbTransferMannschaften.ItemsSource = ddlMannschaften;
             ddlSpielHeimMannschaften.ItemsSource = ddlMannschaften;
             ddlSpielAuswaertsMannschaften.ItemsSource = ddlMannschaften;
+            ddlTrainerMannschaft.ItemsSource = ddlMannschaften;
         }
 
         private void PopulateMannschaften()
@@ -67,7 +68,6 @@ namespace Turnierplaner
                 MessageBox.Show(exep.Message);
             }
             BindMannschaftenDropDown();
-            BindTrainerMannschaftenDropDown();
         }
 
         private void PopulateSpieler()
@@ -164,8 +164,6 @@ namespace Turnierplaner
 
             PopulateMannschaften();
         }
-
-        
 
         #endregion Mannschaften
 
@@ -315,10 +313,6 @@ namespace Turnierplaner
             return returnValue;
         }
 
-        private void BindTrainerMannschaftenDropDown()
-        {
-            ddlTrainerMannschaft.ItemsSource = ddlMannschaften;
-        }
         #endregion
 
         #region Schiedsrichter
@@ -597,28 +591,28 @@ namespace Turnierplaner
 
             if (String.IsNullOrEmpty(ddlSpielHeimMannschaften.Text))
             {
-                ddlSpielHeimMannschaften.BorderBrush = Brushes.Red;
+                bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Red;
                 ret = true;
             }
-            else ddlSpielHeimMannschaften.BorderBrush = colorNormal;
+            else bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Transparent;
 
             if (String.IsNullOrEmpty(ddlSpielAuswaertsMannschaften.Text))
             {
-                ddlSpielAuswaertsMannschaften.BorderBrush = Brushes.Red;
+                bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Red;
                 ret = true;
             }
-            else ddlSpielAuswaertsMannschaften.BorderBrush = colorNormal;
+            else bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Transparent;
 
-            if (string.Equals(ddlSpielAuswaertsMannschaften.Text, ddlSpielHeimMannschaften.Text))
+            if (!String.IsNullOrEmpty(ddlSpielAuswaertsMannschaften.Text) && !String.IsNullOrEmpty(ddlSpielHeimMannschaften.Text) && string.Equals(ddlSpielAuswaertsMannschaften.Text, ddlSpielHeimMannschaften.Text) )
             {
-                ddlSpielAuswaertsMannschaften.BorderBrush = Brushes.Red;
-                ddlSpielHeimMannschaften.BorderBrush = Brushes.Red;
+                bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Red;
+                bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Red;
                 ret = true;
             }
-            else
+            else if(!String.IsNullOrEmpty(ddlSpielAuswaertsMannschaften.Text) && !String.IsNullOrEmpty(ddlSpielHeimMannschaften.Text) && !string.Equals(ddlSpielAuswaertsMannschaften.Text, ddlSpielHeimMannschaften.Text))
             {
-                ddlSpielAuswaertsMannschaften.BorderBrush = colorNormal;
-                ddlSpielHeimMannschaften.BorderBrush = colorNormal;
+                bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Transparent;
+                bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Transparent;
             };
 
             return ret;
@@ -674,10 +668,22 @@ namespace Turnierplaner
             ddlSpielAuswaertsMannschaften.Text = "";
         }
 
+        private void tbxZuschaueranzahl_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void tbxSpieltag_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
         #endregion Spiel
 
         #endregion Spiel erstellen
 
-        
+
     }
 }
