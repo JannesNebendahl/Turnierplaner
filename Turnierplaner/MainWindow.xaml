@@ -168,6 +168,60 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
+            <TabItem Header="Spiel erstellen">
+                <Grid HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Spiel zu DB hinzufügen" Grid.Row="0" Grid.Column="0">
+                        <Grid HorizontalAlignment="Right">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <Label Content="Spieltag*: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxSpieltag" Grid.Row="0" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5"></TextBox>
+                            <Label Content="Datum: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <DatePicker x:Name="dpDatum" Grid.Row="1" Grid.Column="1" Height="24" Margin="0,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                            <Label Content="Zuschaueranzahl: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxZuschaueranzahl" Grid.Row="2" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5"></TextBox>
+                            <Label Content="Heimmannschaft*: " Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlSpielHeimMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Name="ddlSpielHeimMannschaftenItem" Content="{Binding Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Label Content="Auswährtsmannschaft*: " Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <ComboBox Grid.Row="4" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlSpielAuswaertsMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Name="ddlSpielAuswaertsMannschaften" Content="{Binding Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button x:Name="btnAddSpiel" Grid.Row="5" Grid.Column="1" Height="24" Margin="0,5,5,5" Click="BtnAddSpiel_Click" >Spiel hinzufügen</Button>
+                            <Label Content="requierd *" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" FontStyle="Italic" Foreground="Gray" Margin="-10,0,0,0"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+             </TabItem>
+
         </TabControl>
 
     </Grid>
