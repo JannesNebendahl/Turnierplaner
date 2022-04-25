@@ -38,6 +38,16 @@ CREATE TABLE SpieltAuf
     PositionId INTEGER NOT NULL REFERENCES Positionen
 );
 
+CREATE TABLE Spiel
+(
+    Id                      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    Datum                   DATE,
+    Spieltag                INTEGER NOT NULL,
+    Zuschauerzahl           INTEGER,
+    HeimmannschaftsId       INTEGER NOT NULL REFERENCES Mannschaften,
+    AuswaertsmannschaftsId  INTEGER NOT NULL REFERENCES Mannschaften
+);
+
 --Insert default Data
 INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (1, 'Torwart', 'TW');
 INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (2, 'Rechtsverteidiger', 'RV');
