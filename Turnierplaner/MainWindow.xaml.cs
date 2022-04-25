@@ -51,6 +51,8 @@ namespace Turnierplaner
         {
             cbSpielerMannschaften.ItemsSource = ddlMannschaften;
             cbTransferMannschaften.ItemsSource = ddlMannschaften;
+            ddlSpielHeimMannschaften.ItemsSource = ddlMannschaften;
+            ddlSpielAuswaertsMannschaften.ItemsSource = ddlMannschaften;
         }
 
         private void PopulateMannschaften()
@@ -438,7 +440,7 @@ namespace Turnierplaner
             spiel.Spieltag = int.Parse(tbxSpieltag.Text);
             try { spiel.Zuschaueranzahl = int.Parse(tbxZuschaueranzahl.Text); } catch { }
 
-            foreach (Mannschaft mannschaft in ddlMannschaftenList)
+            foreach (Mannschaft mannschaft in ddlMannschaften)
             {
                 if (string.Equals(mannschaft.Name, ddlSpielHeimMannschaften.Text))
                 {
@@ -468,12 +470,6 @@ namespace Turnierplaner
             tbxSpielerTrikotnummer.Text = "";
             ddlSpielHeimMannschaften.Text = "";
             ddlSpielAuswaertsMannschaften.Text = "";
-        }
-
-        private void BindSpielMannschaftenDropDown()
-        {
-            ddlSpielHeimMannschaften.ItemsSource = ddlMannschaftenList;
-            ddlSpielAuswaertsMannschaften.ItemsSource = ddlMannschaftenList;
         }
 
         #endregion Spiel
