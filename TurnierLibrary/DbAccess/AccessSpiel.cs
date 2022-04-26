@@ -31,8 +31,8 @@ namespace TurnierLibrary
 
         public static void StoreSpiel(Spiel spiel)
         {
-            string sql = "INSERT INTO Spiel(Datum, Spieltag, Zuschaueranzahl, HeimmannschaftsID, AuswaertsmannschaftID) " +
-                         "VALUES (@Datum, @Spieltag, @Zuschaueranzahl, @HeimmannschaftsID, @AuswaertsmannschaftID);" +
+            string sql = "INSERT INTO Spiel(Datum, Spieltag, Zuschauerzahl, HeimmannschaftsId, AuswaertsmannschaftsId) " +
+                         "VALUES (@Datum, @Spieltag, @Zuschauerzahl, @HeimmannschaftsId, @AuswaertsmannschaftsId);" +
                          "SELECT last_insert_rowid();";
 
             try
@@ -46,9 +46,9 @@ namespace TurnierLibrary
                         command.CommandText = sql;
                         command.Parameters.Add(new SQLiteParameter("@Datum", spiel.Datum));
                         command.Parameters.Add(new SQLiteParameter("@Spieltag", spiel.Spieltag));
-                        command.Parameters.Add(new SQLiteParameter("@Zuschaueranzahl", spiel.Zuschaueranzahl));
-                        command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsID", spiel.Heimmanschaft));
-                        command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftID", spiel.Auswaertsmannschaft));
+                        command.Parameters.Add(new SQLiteParameter("@Zuschauerzahl", spiel.Zuschauerzahl));
+                        command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsId", spiel.Heimmanschaft));
+                        command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftsId", spiel.Auswaertsmannschaft));
                         var result = command.ExecuteNonQuery();
                         if (result <= 0)
                             throw new Exception("Can't store Spiel ");

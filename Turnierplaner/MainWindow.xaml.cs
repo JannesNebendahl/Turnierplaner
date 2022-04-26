@@ -163,7 +163,7 @@ namespace Turnierplaner
             PopulateMannschaften();
         }
 
-        
+
 
         #endregion Mannschaften
 
@@ -391,7 +391,10 @@ namespace Turnierplaner
                 tbxSpieltag.BorderBrush = Brushes.Red;
                 ret = true;
             }
-            else tbxSpieltag.BorderBrush = colorNormal;
+            else
+            {
+                tbxSpieltag.BorderBrush = colorNormal;
+            }
 
             if (!String.IsNullOrEmpty(tbxZuschaueranzahl.Text)){
                 if (!int.TryParse(tbxZuschaueranzahl.Text, out _))
@@ -399,33 +402,43 @@ namespace Turnierplaner
                     tbxZuschaueranzahl.BorderBrush = Brushes.Red;
                     ret = true;
                 }
-                else tbxZuschaueranzahl.BorderBrush = colorNormal; }
+                else
+                {
+                    tbxZuschaueranzahl.BorderBrush = colorNormal;
+                }
+            }
 
             if (String.IsNullOrEmpty(ddlSpielHeimMannschaften.Text))
             {
-                ddlSpielHeimMannschaften.BorderBrush = Brushes.Red;
-                ret = true;
-            }
-            else ddlSpielHeimMannschaften.BorderBrush = colorNormal;
-
-            if (String.IsNullOrEmpty(ddlSpielAuswaertsMannschaften.Text))
-            {
-                ddlSpielAuswaertsMannschaften.BorderBrush = Brushes.Red;
-                ret = true;
-            }
-            else ddlSpielAuswaertsMannschaften.BorderBrush = colorNormal;
-
-            if (string.Equals(ddlSpielAuswaertsMannschaften.Text, ddlSpielHeimMannschaften.Text))
-            {
-                ddlSpielAuswaertsMannschaften.BorderBrush = Brushes.Red;
-                ddlSpielHeimMannschaften.BorderBrush = Brushes.Red;
+                HeimBorder.BorderBrush = Brushes.Red;
                 ret = true;
             }
             else
             {
-                ddlSpielAuswaertsMannschaften.BorderBrush = colorNormal;
-                ddlSpielHeimMannschaften.BorderBrush = colorNormal;
-            };
+                HeimBorder.BorderBrush = colorNormal;
+            }
+
+            if (String.IsNullOrEmpty(ddlSpielAuswaertsMannschaften.Text))
+            {
+                AuswaertsBorder.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else
+            {
+                AuswaertsBorder.BorderBrush = colorNormal;
+            }
+
+            if (string.Equals(ddlSpielAuswaertsMannschaften.Text, ddlSpielHeimMannschaften.Text))
+            {
+                AuswaertsBorder.BorderBrush = Brushes.Red;
+                HeimBorder.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else
+            {
+                AuswaertsBorder.BorderBrush = colorNormal;
+                HeimBorder.BorderBrush = colorNormal;
+            }
 
             return ret;
         }
@@ -438,7 +451,7 @@ namespace Turnierplaner
             Spiel spiel = new Spiel();
 
             spiel.Spieltag = int.Parse(tbxSpieltag.Text);
-            try { spiel.Zuschaueranzahl = int.Parse(tbxZuschaueranzahl.Text); } catch { }
+            try { spiel.Zuschauerzahl = int.Parse(tbxZuschaueranzahl.Text); } catch { }
 
             foreach (Mannschaft mannschaft in ddlMannschaften)
             {
@@ -454,12 +467,12 @@ namespace Turnierplaner
 
             if(spiel.Heimmanschaft == null)
             {
-                ddlSpielHeimMannschaften.BorderBrush = Brushes.Red;
+                HeimBorder.BorderBrush = Brushes.Red;
                 return;
             }
             if(spiel.Auswaertsmannschaft == null)
             {
-                ddlSpielAuswaertsMannschaften.BorderBrush = Brushes.Red;
+                AuswaertsBorder.BorderBrush = Brushes.Red;
                 return;
             }
 
