@@ -737,5 +737,208 @@ namespace Turnierplaner
             }
         }
         #endregion Filter Spieler
+
+
+        #region Turnier erstellen
+        private void btnCreateTurnierJederVsJeden_Click(object sender, RoutedEventArgs e)
+        {
+            if (KeepExistingTournament())
+                return;
+
+            List<Mannschaft> teams = AccessMannschaften.LoadMannschaften();
+
+            if (teams.Count < 2)
+            {
+                MessageBox.Show("Es werden mindestens 2 Mannschaften benötigt.");
+                return;
+            }
+
+            Mannschaft? dummy = null;
+            List<Spiel> spielplan = new List<Spiel>();
+            DateTime? firstSpieltag = dpCreateTrunier1Spieltag.SelectedDate;
+            TimeSpan? timeBetweenSpieltagen = CalcutlateTimespanBetweenSpieltag(firstSpieltag, dpCreateTrunierLastSpieltag.SelectedDate, teams.Count);
+
+            AddDummyIfNeeded(ref teams, ref dummy);
+
+            CreateSpielplan(ref teams, ref spielplan, ref firstSpieltag, ref timeBetweenSpieltagen);
+
+            RemoveSpieleMitDummy(dummy, ref spielplan, spielplan);
+
+            PushSpielplanToDb(ref spielplan);
+        }
+
+        private static bool KeepExistingTournament()
+        {
+            bool ret = false;
+
+            try
+            {
+                int? countSpiele = AccessSpiel.CountSpiele();
+                if (countSpiele == null) 
+                    throw new Exception("Unexpected behavior: CountSpiele returned null");
+
+                if (countSpiele > 0)
+                {
+                    if (MessageBox.Show("Es existiert bereits ein Turnier. Wollen Sie dieses löschen und ein neues Turnier generieren lassen?", "Existens eines Turnieres", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.No)
+                    {
+                        return true;
+                    }
+
+                    int? countDeleted = AccessSpiel.CleanSpiele();
+                    if (countSpiele == null)
+                        throw new Exception("Unexpected behavior: CleanSpiele returned null");
+
+                    if (countDeleted != countSpiele)
+                    {
+                        if (countDeleted > countSpiele)
+                        {
+                            throw new Exception("Unexpected behavior: Deleted more Spiele than exist");
+                        }
+                        else
+                        {
+                            throw new Exception("Didn't deleted all Spiele. [ExistingSpiele: " + countSpiele + "; DeletedSpiele: " + countDeleted + "]");
+                        }
+                    }
+                }
+                   
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
+            return ret;
+        }
+
+        private TimeSpan? CalcutlateTimespanBetweenSpieltag(DateTime? firstDay, DateTime? lastDay, int teamsCount)
+        {
+            TimeSpan? timeBetweenSpieltagen = null;
+            if (firstDay != null && lastDay != null)
+            {
+                timeBetweenSpieltagen = lastDay - firstDay;
+                timeBetweenSpieltagen = timeBetweenSpieltagen / teamsCount;
+            }
+            else if (dpCreateTrunier1Spieltag.SelectedDate != null)
+            {
+                timeBetweenSpieltagen = TimeSpan.FromDays(7);
+            }
+            return timeBetweenSpieltagen;
+        }
+
+        private void AddDummyIfNeeded(ref List<Mannschaft> teams, ref Mannschaft? dummy)
+        {
+            if (teams.Count % 2 == 1)
+            {
+                dummy = new Mannschaft();
+                bool didntfoundFreeId = true;
+                int tryId = 0;
+                try
+                {
+                    do
+                    {
+                        if ((bool)AccessSpiel.IdExist(tryId))
+                        {
+                            tryId++;
+                        }
+                        else
+                        {
+                            didntfoundFreeId = false;
+                        }
+                    } while (didntfoundFreeId);
+                }
+                catch (Exception exep)
+                {
+                    MessageBox.Show(exep.Message);
+                }
+                dummy.Id = tryId;
+                teams.Add(dummy);
+            }
+        }
+
+        private void CreateSpielplan(ref List<Mannschaft> teams, ref List<Spiel> spielplan, ref DateTime? firstSpieltag, ref TimeSpan? timeBetweenSpieltagen)
+        {
+            int[] sideA = new int[teams.Count / 2];
+            int[] sideB = new int[teams.Count / 2];
+
+            int a = 0;
+            int b = 0;
+            foreach(Mannschaft mannschaft in teams)
+            {
+                if(a < teams.Count / 2)
+                {
+                    sideA[a] = (int)mannschaft.Id;
+                    a++;
+                }
+                else
+                {
+                    sideB[b] = (int)mannschaft.Id;
+                    b++;
+                }
+            }
+
+            for (int spieltag = 1; spieltag < teams.Count; spieltag++)
+            {
+                DateTime? spieltagDate = firstSpieltag + timeBetweenSpieltagen * spieltag;
+                CreateSpieltag(teams.Count, sideA, sideB, ref spielplan, spieltag, spieltagDate);
+                if (teams.Count > 2)
+                    ReArrangeSides(teams.Count / 2, ref sideA, ref sideB);
+            }
+        }
+
+        private void CreateSpieltag(int teamsCount, int[] sideA, int[] sideB, ref List<Spiel> spielplan, int spieltag, DateTime? spieltagDate)
+        {
+            for (int i = 0; i < (teamsCount / 2); i++)
+            {
+                Spiel spiel = new Spiel();
+                spiel.Heimmanschaft = sideA[i];
+                spiel.Auswaertsmannschaft = sideB[i];
+                spiel.Spieltag = spieltag;
+                if (spieltagDate != null)
+                {
+                    spiel.Datum = spieltagDate;
+                }
+                spielplan.Add(spiel);
+            }
+        }
+
+        private void ReArrangeSides(int size, ref int[] sideA, ref int[] sideB)
+        {
+            int temp = sideA[size - 1];
+            for (int i = size - 1; i > 1; i--)
+            {
+                sideA[i] = sideA[i - 1];
+            }
+            sideA[1] = sideB[0];
+            for (int i = 0; i < size - 1; i++)
+            {
+                sideB[i] = sideB[i + 1];
+            }
+            sideB[size - 1] = temp;
+        }
+
+        private void RemoveSpieleMitDummy(Mannschaft? dummy, ref List<Spiel> spielplan, List<Spiel> tempSpielplan)
+        {
+            if (dummy == null)
+                return;
+
+            spielplan.RemoveAll(spiel => spiel.Heimmanschaft == dummy.Id || spiel.Auswaertsmannschaft == dummy.Id);
+            
+        }
+
+        private void PushSpielplanToDb(ref List<Spiel> spielplan)
+        {
+            try
+            {
+                foreach(Spiel spiel in spielplan)
+                {
+                    AccessSpiel.StoreSpiel(spiel);
+                }
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+        }
+        #endregion
     }
 }

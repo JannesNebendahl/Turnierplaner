@@ -48,5 +48,77 @@ namespace TurnierLibrary
             }
         }
 
+        public static int? CountSpiele()
+        {
+            int? count = null;
+            string sql = "SELECT COUNT(*) " +
+                         "FROM Spiel;";
+
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    var result = command.ExecuteScalar();
+                    count = Convert.ToInt32(result);
+                }
+            }
+
+            return count;
+        }
+
+        public static int? CleanSpiele()
+        {
+            int? count = null;
+            string sql = "DELETE " +
+                         "FROM Spiel;";
+
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    var result = command.ExecuteNonQuery();
+                    count = Convert.ToInt32(result);
+                }
+            }
+
+            return count;
+        }
+        
+        public static bool? IdExist(int Id)
+        {
+            bool? ret = null;
+
+            string sql = "SELECT COUNT(*) " +
+                         "FROM Spiel;" +
+                         "WHERE Id==@Id;";
+
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    command.Parameters.Add(new SQLiteParameter("@Id", Id));
+                    var result = command.ExecuteScalar();
+                    if (Convert.ToInt32(result) > 0)
+                        ret = true;
+                    else if(Convert.ToInt32(result) == 0)
+                    {
+                        ret = false;
+                    }
+                }
+            }
+
+            if(ret == null)
+                throw new Exception("Unexpected behavior: IdExist returns null");
+            return ret;
+        }
     }
 }
