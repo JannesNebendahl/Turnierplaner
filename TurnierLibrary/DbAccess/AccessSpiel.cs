@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Text;
+using System.Windows.Controls;
 
 namespace TurnierLibrary
 {
@@ -14,18 +15,11 @@ namespace TurnierLibrary
         {
             string sql = "SELECT * " +
                          "FROM Spiel";
-            try
+
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    var output = cnn.Query<Spiel>(sql, new DynamicParameters());
-                    return output.AsList();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
-                return new List<Spiel>();
+                var output = cnn.Query<Spiel>(sql, new DynamicParameters());
+                return output.AsList();
             }
         }
 
@@ -35,9 +29,10 @@ namespace TurnierLibrary
                          "VALUES (@Datum, @Spieltag, @Zuschauerzahl, @HeimmannschaftsId, @AuswaertsmannschaftsId);" +
                          "SELECT last_insert_rowid();";
 
-            try
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
             {
-                using (var connection = new SQLiteConnection(LoadConnectionString()))
+                connection.Open();
+                using (var command = connection.CreateCommand())
                 {
                     connection.Open();
                     using (var command = connection.CreateCommand())
@@ -54,10 +49,6 @@ namespace TurnierLibrary
                             throw new Exception("Can't store Spiel ");
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
             }
         }
 

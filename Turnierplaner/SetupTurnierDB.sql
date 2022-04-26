@@ -43,10 +43,24 @@ CREATE TABLE Spiel
     Id                      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
     Datum                   DATE,
     Spieltag                INTEGER NOT NULL,
-    Zuschauerzahl           INTEGER,
-    HeimmannschaftsId       INTEGER NOT NULL REFERENCES Mannschaften,
-    AuswaertsmannschaftsId  INTEGER NOT NULL REFERENCES Mannschaften
+    Zuschaueranzahl           INTEGER,
+    HeimmannschaftsID       INTEGER NOT NULL REFERENCES Mannschaften,
+    AuswaertsmannschaftsID  INTEGER NOT NULL REFERENCES Mannschaften
 );
+
+create table Trainer
+(
+    TrainerID   integer not null
+        constraint Trainer_pk
+            primary key,
+    Vorname     varchar not null,
+    Nachname    varchar not null,
+    Amtsantritt date,
+    Mannschaft  integer not null
+);
+
+create unique index Trainer_TrainerID_uindex
+    on Trainer (TrainerID);
 
 --Insert default Data
 INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (1, 'Torwart', 'TW');
@@ -82,3 +96,4 @@ INSERT INTO SpieltAuf (SpielerId, PositionId) VALUES (3,7);
 INSERT INTO SpieltAuf (SpielerId, PositionId) VALUES (3,9);
 INSERT INTO SpieltAuf (SpielerId, PositionId) VALUES (3,11);
 INSERT INTO SpieltAuf (SpielerId, PositionId) VALUES (4,12);
+

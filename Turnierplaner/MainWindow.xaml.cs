@@ -41,6 +41,7 @@ namespace Turnierplaner
         {
             cbMannschaftenKapitan.ItemsSource = ddlSpieler;
             cbTransferSpieler.ItemsSource = ddlSpieler;
+            cbChangePositionSpieler.ItemsSource = ddlSpieler;
         }
 
         private void BindPositionDropDown()
@@ -53,6 +54,7 @@ namespace Turnierplaner
             cbTransferMannschaften.ItemsSource = ddlMannschaften;
             ddlSpielHeimMannschaften.ItemsSource = ddlMannschaften;
             ddlSpielAuswaertsMannschaften.ItemsSource = ddlMannschaften;
+            ddlTrainerMannschaft.ItemsSource = ddlMannschaften;
         }
 
         private void PopulateMannschaften()
@@ -163,8 +165,6 @@ namespace Turnierplaner
             PopulateMannschaften();
         }
 
-
-
         #endregion Mannschaften
 
         #region Spieler
@@ -224,7 +224,7 @@ namespace Turnierplaner
                     {
                         if (pos.Check_Status)
                         {
-                            AccessSpieltAuf.StoreSpieltAuf((int)spieler.Id, (int)pos.Id);
+                            AccessSpieltAuf.AddRelation((int)spieler.Id, (int)pos.Id);
                         }
                     }
                 }
@@ -250,6 +250,70 @@ namespace Turnierplaner
         }
 
         #endregion Spieler
+
+        #region Trainer
+
+        private void btnAddTrainer_Click(object sender, RoutedEventArgs e)
+        {
+
+            Trainer trainer = new Trainer();
+
+            if (checkTrainerInput())
+            {
+                try
+                {
+                    trainer.Vorname = tbxTrainerVorname.Text;
+                    trainer.Nachname = tbxTrainerNachname.Text;
+                    foreach (Mannschaft mannschaft in ddlMannschaften)
+                    {
+                        if (string.Equals(mannschaft.Name, ddlTrainerMannschaft.Text))
+                        {
+                            trainer.Mannschaft = mannschaft.Id;
+                        }
+                    }
+                    trainer.Amtsantritt = dpTrainerAmtsantritt.DisplayDate;
+                    AccessTrainer.StoreTrainer(trainer);
+
+                    tbxTrainerVorname.Text = "";
+                    tbxTrainerNachname.Text = "";
+                    ddlTrainerMannschaft.Text = "";
+                    dpTrainerAmtsantritt.SelectedDate = null;
+                }
+                catch
+                {
+                    MessageBox.Show("Fehlerhafte Eingabe.");
+                }
+
+            }
+        }
+
+        private bool checkTrainerInput()
+        {
+            bool returnValue = true;
+
+            if (!String.IsNullOrEmpty(tbxTrainerVorname.Text)) tbxTrainerVorname.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffabadb3");
+            else
+            {
+                tbxTrainerVorname.BorderBrush = Brushes.Red;
+                returnValue = false;
+            }
+            if (!String.IsNullOrEmpty(tbxTrainerNachname.Text)) tbxTrainerNachname.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffabadb3");
+            else
+            {
+                tbxTrainerNachname.BorderBrush = Brushes.Red;
+                returnValue = false;
+            }
+
+            if (!String.IsNullOrEmpty(ddlTrainerMannschaft.Text)) ddlTrainerMannschaft.BorderBrush = (SolidColorBrush)new BrushConverter().ConvertFrom("#ffabadb3");
+            else
+            {
+                ddlTrainerMannschaft.BorderBrush = Brushes.Red;
+                returnValue = false;
+            }
+            return returnValue;
+        }
+
+        #endregion
 
         #region Schiedsrichter
 
@@ -377,7 +441,131 @@ namespace Turnierplaner
 
         #endregion Spieler transferieren
 
+        #region Spieler position ändern
+        private bool missingPositionChangeInput()
+        {
+            bool ret = false;
+
+            if (String.IsNullOrEmpty(cbChangePositionSpieler.Text))
+            {
+                bChangePositionSpielerBorder.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else bChangePositionSpielerBorder.BorderBrush = Brushes.Transparent;
+
+            return ret;
+        }
+
+        private void btnChangeSpielerPosition_Click(object sender, RoutedEventArgs e)
+        {
+            if (missingPositionChangeInput())
+                return;
+
+            Spieler selectedSpieler = (Spieler)cbChangePositionSpieler.SelectedItem;
+            List<Position> positionsOfPlayer = new List<Position>();
+            List<Position> selectedPositions = new List<Position>();
+
+            try
+            {
+                positionsOfPlayer = AccessSpieltAuf.GetPositions(selectedSpieler);
+                selectedPositions = (List<Position>)cbChangePosition.ItemsSource;
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
+            List<Position> addToSpieltAuf = new List<Position>();
+            List<Position> removeFromSpieltAuf = new List<Position>();
+
+            for(int i=0; i<positionsOfPlayer.Count; i++)
+            {
+                positionsOfPlayer[i].Check_Status = true;
+            }
+
+            foreach(Position selPos in selectedPositions)
+            {
+                if (selPos.Check_Status)
+                {
+                    if (!positionsOfPlayer.Any(p => p.Id == selPos.Id))
+                    {
+                        addToSpieltAuf.Add(selPos);
+                    }
+                }
+                else
+                {
+                    if (positionsOfPlayer.Any(p => p.Id == selPos.Id))
+                    {
+                        removeFromSpieltAuf.Add(selPos);
+                    }
+                }
+            }
+
+            foreach(Position pos in addToSpieltAuf)
+            {
+                try
+                {
+                    AccessSpieltAuf.AddRelation((int)selectedSpieler.Id, (int)pos.Id);
+                }
+                catch (Exception exep)
+                {
+                    MessageBox.Show(exep.Message);
+                }
+            }
+            foreach(Position pos in removeFromSpieltAuf)
+            {
+                try
+                {
+                    AccessSpieltAuf.DeleteRelation((int)selectedSpieler.Id, (int)pos.Id);
+                }
+                catch (Exception exep)
+                {
+                    MessageBox.Show(exep.Message);
+                }
+            }
+
+            cbChangePositionSpieler.Text = "";
+            cbChangePosition.ItemsSource = null;
+        }
+
+        private void cbChangePositionSpieler_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbChangePositionSpieler.SelectedItem == null)
+                return;
+
+            Spieler selectedSpieler = (Spieler)cbChangePositionSpieler.SelectedItem;
+            List<Position> positionsOfPlayer = new List<Position>();
+
+            try
+            {
+                positionsOfPlayer = AccessSpieltAuf.GetPositions(selectedSpieler);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
+            PopulatePosition();
+            List<Position> ddlPositionsOfPlayer = ddlPosition;
+
+            foreach(Position pos in positionsOfPlayer)
+            {
+                for(int i=0; i<ddlPositionsOfPlayer.Count; i++)
+                {
+                    if(ddlPositionsOfPlayer[i].Id == pos.Id)
+                    {
+                        ddlPositionsOfPlayer[i].Check_Status = true;
+                        break;
+                    }
+                }
+            }
+
+            cbChangePosition.ItemsSource = ddlPositionsOfPlayer;
+        }
+        #endregion
+
         #endregion BD Ändern
+
         #region Spiel erstellen
 
         #region Spiel
@@ -410,35 +598,29 @@ namespace Turnierplaner
 
             if (String.IsNullOrEmpty(ddlSpielHeimMannschaften.Text))
             {
-                HeimBorder.BorderBrush = Brushes.Red;
+                bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Red;
                 ret = true;
             }
-            else
-            {
-                HeimBorder.BorderBrush = colorNormal;
-            }
+            else bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Transparent;
 
             if (String.IsNullOrEmpty(ddlSpielAuswaertsMannschaften.Text))
             {
-                AuswaertsBorder.BorderBrush = Brushes.Red;
+                bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Red;
                 ret = true;
             }
-            else
-            {
-                AuswaertsBorder.BorderBrush = colorNormal;
-            }
+            else bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Transparent;
 
-            if (string.Equals(ddlSpielAuswaertsMannschaften.Text, ddlSpielHeimMannschaften.Text))
+            if (!String.IsNullOrEmpty(ddlSpielAuswaertsMannschaften.Text) && !String.IsNullOrEmpty(ddlSpielHeimMannschaften.Text) && string.Equals(ddlSpielAuswaertsMannschaften.Text, ddlSpielHeimMannschaften.Text) )
             {
-                AuswaertsBorder.BorderBrush = Brushes.Red;
-                HeimBorder.BorderBrush = Brushes.Red;
+                bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Red;
+                bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Red;
                 ret = true;
             }
-            else
+            else if(!String.IsNullOrEmpty(ddlSpielAuswaertsMannschaften.Text) && !String.IsNullOrEmpty(ddlSpielHeimMannschaften.Text) && !string.Equals(ddlSpielAuswaertsMannschaften.Text, ddlSpielHeimMannschaften.Text))
             {
-                AuswaertsBorder.BorderBrush = colorNormal;
-                HeimBorder.BorderBrush = colorNormal;
-            }
+                bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Transparent;
+                bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Transparent;
+            };
 
             return ret;
         }
@@ -476,7 +658,15 @@ namespace Turnierplaner
                 return;
             }
 
-            AccessSpiel.StoreSpiel(spiel);
+            try
+            {
+                AccessSpiel.StoreSpiel(spiel);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
             tbxSpieltag.Text = "";
             dpDatum.SelectedDate = null;
             tbxZuschaueranzahl.Text = "";
@@ -485,8 +675,67 @@ namespace Turnierplaner
             ddlSpielAuswaertsMannschaften.Text = "";
         }
 
+        private void tbxZuschaueranzahl_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void tbxSpieltag_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+
         #endregion Spiel
 
         #endregion Spiel erstellen
+
+        #region Filter Spieler
+        private void btnZeigenTabelle_Click(object sender, RoutedEventArgs e)
+        {
+            string sql = "";
+
+            switch (cbZeigenTabelle.Text)
+            {
+                case "Mannschaften":
+                    sql = "SELECT * " +
+                          "FROM Mannschaften";
+                    break;
+                case "Positionen":
+                    sql = "SELECT * " +
+                          "FROM Positionen";
+                    break;
+                case "Schiedsrichter":
+                    sql = "SELECT * " +
+                          "FROM Schiedsrichter";
+                    break;
+                case "Spiele":
+                    sql = "SELECT * " +
+                          "FROM Spiel";
+                    break;
+                case "Spieler":
+                    sql = "SELECT * " +
+                          "FROM Spieler";
+                    break;
+                case "SpieltAuf":
+                    sql = "SELECT * " +
+                          "FROM SpieltAuf";
+                    break;
+                default:
+                    return;
+            }
+
+            try
+            {
+                SqliteDataAccess.LoadTableInDataGrid(dgZeigenTabelle, sql);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+        }
+        #endregion Filter Spieler
     }
 }
