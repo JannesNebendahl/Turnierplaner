@@ -351,6 +351,20 @@
                             <Button x:Name="btnCreateTurnierJederVsJeden" Grid.Row="2" Grid.Column="1" Click="btnCreateTurnierJederVsJeden_Click">Turnier generieren</Button>
                         </Grid>
                     </GroupBox>
+                    <GroupBox Header="Spielplan" Grid.Row="0" Grid.Column="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <DataGrid x:Name="dgSpielplan" Grid.Row="0" Grid.Column="0" Width="500" Height="300" AutoGenerateColumns="True"/>
+                            <Button x:Name="btnRefreshSpielplan" Grid.Row="1" Grid.Column="0" Click="btnRefreshSpielplan_Click">Neu laden</Button>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>

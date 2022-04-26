@@ -692,7 +692,7 @@ namespace Turnierplaner
 
         #endregion Spiel erstellen
 
-        #region Filter Spieler
+        #region DB Zeigen
         private void btnZeigenTabelle_Click(object sender, RoutedEventArgs e)
         {
             string sql = "";
@@ -736,8 +736,7 @@ namespace Turnierplaner
                 MessageBox.Show(exep.Message);
             }
         }
-        #endregion Filter Spieler
-
+        #endregion DB Zeigen
 
         #region Turnier erstellen
         private void btnCreateTurnierJederVsJeden_Click(object sender, RoutedEventArgs e)
@@ -943,5 +942,17 @@ namespace Turnierplaner
             }
         }
         #endregion
+
+        #region Spielplan zeigen
+        private void btnRefreshSpielplan_Click(object sender, RoutedEventArgs e)
+        {
+            string sql = "SELECT S.Spieltag, S.Datum, H.Name AS Heim, A.Name AS Gast " +
+                         "FROM Spiel S, Mannschaften H, Mannschaften A " +
+                         "WHERE S.HeimmannschaftsID == H.Id AND S.AuswaertsmannschaftsID == A.Id " +
+                         "ORDER BY S.Spieltag;";
+            SqliteDataAccess.LoadTableInDataGrid(dgSpielplan, sql);
+        }
+        #endregion Spielplan zeigen
+
     }
 }
