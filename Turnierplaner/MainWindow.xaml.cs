@@ -649,12 +649,12 @@ namespace Turnierplaner
 
             if(spiel.Heimmanschaft == null)
             {
-                HeimBorder.BorderBrush = Brushes.Red;
+                bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Red;
                 return;
             }
             if(spiel.Auswaertsmannschaft == null)
             {
-                AuswaertsBorder.BorderBrush = Brushes.Red;
+                bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Red;
                 return;
             }
 

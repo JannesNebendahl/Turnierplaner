@@ -34,20 +34,16 @@ namespace TurnierLibrary
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    connection.Open();
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandTimeout = 0;
-                        command.CommandText = sql;
-                        command.Parameters.Add(new SQLiteParameter("@Datum", spiel.Datum));
-                        command.Parameters.Add(new SQLiteParameter("@Spieltag", spiel.Spieltag));
-                        command.Parameters.Add(new SQLiteParameter("@Zuschauerzahl", spiel.Zuschauerzahl));
-                        command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsId", spiel.Heimmanschaft));
-                        command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftsId", spiel.Auswaertsmannschaft));
-                        var result = command.ExecuteNonQuery();
-                        if (result <= 0)
-                            throw new Exception("Can't store Spiel ");
-                    }
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    command.Parameters.Add(new SQLiteParameter("@Datum", spiel.Datum));
+                    command.Parameters.Add(new SQLiteParameter("@Spieltag", spiel.Spieltag));
+                    command.Parameters.Add(new SQLiteParameter("@Zuschauerzahl", spiel.Zuschauerzahl));
+                    command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsId", spiel.Heimmanschaft));
+                    command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftsId", spiel.Auswaertsmannschaft));
+                    var result = command.ExecuteNonQuery();
+                    if (result <= 0)
+                        throw new Exception("Can't store Spiel ");
                 }
             }
         }
