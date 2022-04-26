@@ -286,7 +286,7 @@
                         </Grid>
                     </GroupBox>
                 </Grid>
-             </TabItem>
+            </TabItem>
             <TabItem Header="DB zeigen">
                 <Grid HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
@@ -323,8 +323,32 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-
+            <TabItem Header="Turnier Erstellen">
+                <Grid HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Jeder gegen jeden Turnier" Grid.Row="0" Grid.Column="0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Button x:Name="btnCreateTurnierJederVsJeden" Grid.Row="0" Grid.Column="0" Click="btnCreateTurnierJederVsJeden_Click">Turnier generieren</Button>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
         </TabControl>
-
     </Grid>
 </Window>
