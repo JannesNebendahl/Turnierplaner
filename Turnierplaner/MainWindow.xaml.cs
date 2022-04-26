@@ -741,7 +741,10 @@ namespace Turnierplaner
             List<Mannschaft> teams = AccessMannschaften.LoadMannschaften();
 
             if (teams.Count < 2)
+            {
+                MessageBox.Show("Es werden mindestens 2 Mannschaften benötigt.");
                 return;
+            }
 
             Mannschaft? dummy = null;
             List<Spiel> spielplan = new List<Spiel>();
@@ -749,6 +752,8 @@ namespace Turnierplaner
             AddDummyIfNeeded(ref teams, ref dummy);
 
             CreateSpielplan(ref teams, ref spielplan);
+
+            RemoveSpieleMitDummy(dummy, ref spielplan, spielplan);
 
             AddSpielplanToDb(ref spielplan);
         }
@@ -880,6 +885,15 @@ namespace Turnierplaner
                 sideB[i] = sideB[i + 1];
             }
             sideB[size - 1] = temp;
+        }
+
+        private void RemoveSpieleMitDummy(Mannschaft? dummy, ref List<Spiel> spielplan, List<Spiel> tempSpielplan)
+        {
+            if (dummy == null)
+                return;
+
+            spielplan.RemoveAll(spiel => spiel.Heimmanschaft == dummy.Id || spiel.Auswaertsmannschaft == dummy.Id);
+            
         }
 
         private void AddSpielplanToDb(ref List<Spiel> spielplan)
