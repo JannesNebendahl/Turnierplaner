@@ -748,14 +748,16 @@ namespace Turnierplaner
 
             Mannschaft? dummy = null;
             List<Spiel> spielplan = new List<Spiel>();
+            DateTime? firstSpieltag = dpCreateTrunier1Spieltag.SelectedDate;
+            TimeSpan? timeBetweenSpieltagen = CalcutlateTimespanBetweenSpieltag(firstSpieltag, dpCreateTrunierLastSpieltag.SelectedDate, teams.Count);
 
             AddDummyIfNeeded(ref teams, ref dummy);
 
-            CreateSpielplan(ref teams, ref spielplan);
+            CreateSpielplan(ref teams, ref spielplan, ref firstSpieltag, ref timeBetweenSpieltagen);
 
             RemoveSpieleMitDummy(dummy, ref spielplan, spielplan);
 
-            AddSpielplanToDb(ref spielplan);
+            PushSpielplanToDb(ref spielplan);
         }
 
         private static bool KeepExistingTournament()
@@ -801,6 +803,21 @@ namespace Turnierplaner
             return ret;
         }
 
+        private TimeSpan? CalcutlateTimespanBetweenSpieltag(DateTime? firstDay, DateTime? lastDay, int teamsCount)
+        {
+            TimeSpan? timeBetweenSpieltagen = null;
+            if (firstDay != null && lastDay != null)
+            {
+                timeBetweenSpieltagen = lastDay - firstDay;
+                timeBetweenSpieltagen = timeBetweenSpieltagen / teamsCount;
+            }
+            else if (dpCreateTrunier1Spieltag.SelectedDate != null)
+            {
+                timeBetweenSpieltagen = TimeSpan.FromDays(7);
+            }
+            return timeBetweenSpieltagen;
+        }
+
         private void AddDummyIfNeeded(ref List<Mannschaft> teams, ref Mannschaft? dummy)
         {
             if (teams.Count % 2 == 1)
@@ -831,7 +848,7 @@ namespace Turnierplaner
             }
         }
 
-        private void CreateSpielplan(ref List<Mannschaft> teams, ref List<Spiel> spielplan)
+        private void CreateSpielplan(ref List<Mannschaft> teams, ref List<Spiel> spielplan, ref DateTime? firstSpieltag, ref TimeSpan? timeBetweenSpieltagen)
         {
             int[] sideA = new int[teams.Count / 2];
             int[] sideB = new int[teams.Count / 2];
@@ -852,15 +869,16 @@ namespace Turnierplaner
                 }
             }
 
-            for (int i = 0; i < teams.Count - 1; i++)
+            for (int spieltag = 1; spieltag < teams.Count; spieltag++)
             {
-                CreateSpieltag(teams.Count, sideA, sideB, ref spielplan, i+1);
+                DateTime? spieltagDate = firstSpieltag + timeBetweenSpieltagen * spieltag;
+                CreateSpieltag(teams.Count, sideA, sideB, ref spielplan, spieltag, spieltagDate);
                 if (teams.Count > 2)
                     ReArrangeSides(teams.Count / 2, ref sideA, ref sideB);
             }
         }
 
-        private void CreateSpieltag(int teamsCount, int[] sideA, int[] sideB, ref List<Spiel> spielplan, int spieltag)
+        private void CreateSpieltag(int teamsCount, int[] sideA, int[] sideB, ref List<Spiel> spielplan, int spieltag, DateTime? spieltagDate)
         {
             for (int i = 0; i < (teamsCount / 2); i++)
             {
@@ -868,6 +886,10 @@ namespace Turnierplaner
                 spiel.Heimmanschaft = sideA[i];
                 spiel.Auswaertsmannschaft = sideB[i];
                 spiel.Spieltag = spieltag;
+                if (spieltagDate != null)
+                {
+                    spiel.Datum = spieltagDate;
+                }
                 spielplan.Add(spiel);
             }
         }
@@ -896,7 +918,7 @@ namespace Turnierplaner
             
         }
 
-        private void AddSpielplanToDb(ref List<Spiel> spielplan)
+        private void PushSpielplanToDb(ref List<Spiel> spielplan)
         {
             try
             {
