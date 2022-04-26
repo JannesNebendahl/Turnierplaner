@@ -680,10 +680,55 @@ namespace Turnierplaner
             e.Handled = regex.IsMatch(e.Text);
         }
 
+
         #endregion Spiel
 
         #endregion Spiel erstellen
 
+        #region Filter Spieler
+        private void btnZeigenTabelle_Click(object sender, RoutedEventArgs e)
+        {
+            string sql = "";
 
+            switch (cbZeigenTabelle.Text)
+            {
+                case "Mannschaften":
+                    sql = "SELECT * " +
+                          "FROM Mannschaften";
+                    break;
+                case "Positionen":
+                    sql = "SELECT * " +
+                          "FROM Positionen";
+                    break;
+                case "Schiedsrichter":
+                    sql = "SELECT * " +
+                          "FROM Schiedsrichter";
+                    break;
+                case "Spiele":
+                    sql = "SELECT * " +
+                          "FROM Spiel";
+                    break;
+                case "Spieler":
+                    sql = "SELECT * " +
+                          "FROM Spieler";
+                    break;
+                case "SpieltAuf":
+                    sql = "SELECT * " +
+                          "FROM SpieltAuf";
+                    break;
+                default:
+                    return;
+            }
+
+            try
+            {
+                SqliteDataAccess.LoadTableInDataGrid(dgZeigenTabelle, sql);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+        }
+        #endregion Filter Spieler
     }
 }
