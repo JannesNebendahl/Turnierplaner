@@ -765,6 +765,9 @@ namespace Turnierplaner
             RemoveSpieleMitDummy(dummy, ref spielplan, spielplan);
 
             PushSpielplanToDb(ref spielplan);
+
+            dpCreateTrunier1Spieltag.SelectedDate = null;
+            dpCreateTrunierLastSpieltag.SelectedDate = null;
         }
 
         private static bool KeepExistingTournament()
@@ -878,7 +881,7 @@ namespace Turnierplaner
 
             for (int spieltag = 1; spieltag < teams.Count; spieltag++)
             {
-                DateTime? spieltagDate = firstSpieltag + timeBetweenSpieltagen * spieltag;
+                DateTime? spieltagDate = firstSpieltag + timeBetweenSpieltagen * (spieltag - 1);
                 CreateSpieltag(teams.Count, sideA, sideB, ref spielplan, spieltag, spieltagDate);
                 if (teams.Count > 2)
                     ReArrangeSides(teams.Count / 2, ref sideA, ref sideB);
