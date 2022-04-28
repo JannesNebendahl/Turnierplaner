@@ -1322,23 +1322,29 @@ namespace Turnierplaner
         {
             List<Tor> torschuetzenkoenig = new List<Tor>();
             torschuetzenkoenig = AccessTor.LoadTorschuetzenliste(true, "");
-            lbTorschuetzenkoenig.Content = torschuetzenkoenig[0].Vorname + " " + torschuetzenkoenig[0].Nachname + ", Tore: " + torschuetzenkoenig[0].Toranzahl;
-
-            List<Tor> meisteElfmetertore = new List<Tor>();
-            meisteElfmetertore = AccessTor.LoadTorschuetzenliste(true, "Elfmeter");
-            lbmeisteElfmetertore.Content = meisteElfmetertore[0].Vorname + " " + meisteElfmetertore[0].Nachname + ", Tore: " + meisteElfmetertore[0].Toranzahl;
-
-            List<Tor> torschuetzenliste = new List<Tor>();
-            torschuetzenliste = AccessTor.LoadTorschuetzenliste(false, "");
-
-            int platzierung = 1;
-            foreach (Tor item in torschuetzenliste)
+            if (torschuetzenkoenig.Count != 0)
             {
-                item.Platzierung = platzierung;
-                platzierung++;
+                lbTorschuetzenkoenig.Content = torschuetzenkoenig[0].Vorname + " " + torschuetzenkoenig[0].Nachname + ", Tore: " + torschuetzenkoenig[0].Toranzahl;
+
+                List<Tor> meisteElfmetertore = new List<Tor>();
+                meisteElfmetertore = AccessTor.LoadTorschuetzenliste(true, "Elfmeter");
+                if (meisteElfmetertore.Count != 0)
+                {                   
+                    lbmeisteElfmetertore.Content = meisteElfmetertore[0].Vorname + " " + meisteElfmetertore[0].Nachname + ", Tore: " + meisteElfmetertore[0].Toranzahl;
+                }
+
+                List<Tor> torschuetzenliste = new List<Tor>();
+                torschuetzenliste = AccessTor.LoadTorschuetzenliste(false, "");
+
+                int platzierung = 1;
+                foreach (Tor item in torschuetzenliste)
+                {
+                    item.Platzierung = platzierung;
+                    platzierung++;
+                }
+                dgTorschuetzenliste.ItemsSource = torschuetzenliste;
+                dgTorschuetzenliste.Items.Refresh();
             }
-            dgTorschuetzenliste.ItemsSource = torschuetzenliste;
-            dgTorschuetzenliste.Items.Refresh();
         }
         #endregion
 
