@@ -43,9 +43,9 @@ CREATE TABLE Spiel
     Id                      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
     Datum                   DATE,
     Spieltag                INTEGER NOT NULL,
-    Zuschauerzahl           INTEGER,
-    HeimmannschaftsId       INTEGER NOT NULL REFERENCES Mannschaften,
-    AuswaertsmannschaftsId  INTEGER NOT NULL REFERENCES Mannschaften
+    Zuschaueranzahl           INTEGER,
+    HeimmannschaftsID       INTEGER NOT NULL REFERENCES Mannschaften,
+    AuswaertsmannschaftsID  INTEGER NOT NULL REFERENCES Mannschaften
 );
 
 create table Trainer
@@ -96,3 +96,4 @@ INSERT INTO SpieltAuf (SpielerId, PositionId) VALUES (3,7);
 INSERT INTO SpieltAuf (SpielerId, PositionId) VALUES (3,9);
 INSERT INTO SpieltAuf (SpielerId, PositionId) VALUES (3,11);
 INSERT INTO SpieltAuf (SpielerId, PositionId) VALUES (4,12);
+

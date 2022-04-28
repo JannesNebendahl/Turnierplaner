@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Text;
+using System.Windows.Controls;
 
 namespace TurnierLibrary
 {
@@ -14,52 +15,110 @@ namespace TurnierLibrary
         {
             string sql = "SELECT * " +
                          "FROM Spiel";
-            try
+
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
-                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-                {
-                    var output = cnn.Query<Spiel>(sql, new DynamicParameters());
-                    return output.AsList();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
-                return new List<Spiel>();
+                var output = cnn.Query<Spiel>(sql, new DynamicParameters());
+                return output.AsList();
             }
         }
 
         public static void StoreSpiel(Spiel spiel)
         {
-            string sql = "INSERT INTO Spiel(Datum, Spieltag, Zuschaueranzahl, HeimmannschaftsID, AuswaertsmannschaftID) " +
-                         "VALUES (@Datum, @Spieltag, @Zuschaueranzahl, @HeimmannschaftsID, @AuswaertsmannschaftID);" +
+            string sql = "INSERT INTO Spiel(Datum, Spieltag, Zuschaueranzahl, HeimmannschaftsId, AuswaertsmannschaftsId) " +
+                         "VALUES (@Datum, @Spieltag, @Zuschaueranzahl, @HeimmannschaftsId, @AuswaertsmannschaftsId);" +
                          "SELECT last_insert_rowid();";
 
-            try
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
             {
-                using (var connection = new SQLiteConnection(LoadConnectionString()))
+                connection.Open();
+                using (var command = connection.CreateCommand())
                 {
-                    connection.Open();
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandTimeout = 0;
-                        command.CommandText = sql;
-                        command.Parameters.Add(new SQLiteParameter("@Datum", spiel.Datum));
-                        command.Parameters.Add(new SQLiteParameter("@Spieltag", spiel.Spieltag));
-                        command.Parameters.Add(new SQLiteParameter("@Zuschaueranzahl", spiel.Zuschaueranzahl));
-                        command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsID", spiel.Heimmanschaft));
-                        command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftID", spiel.Auswaertsmannschaft));
-                        var result = command.ExecuteNonQuery();
-                        if (result <= 0)
-                            throw new Exception("Can't store Spiel ");
-                    }
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    command.Parameters.Add(new SQLiteParameter("@Datum", spiel.Datum));
+                    command.Parameters.Add(new SQLiteParameter("@Spieltag", spiel.Spieltag));
+                    command.Parameters.Add(new SQLiteParameter("@Zuschaueranzahl", spiel.Zuschauerzahl));
+                    command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsId", spiel.Heimmanschaft));
+                    command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftsId", spiel.Auswaertsmannschaft));
+                    var result = command.ExecuteNonQuery();
+                    if (result <= 0)
+                        throw new Exception("Can't store Spiel ");
                 }
-            }
-            catch (Exception e)
-            {
-                Console.Error.Write(e.Message);
             }
         }
 
+        public static int? CountSpiele()
+        {
+            int? count = null;
+            string sql = "SELECT COUNT(*) " +
+                         "FROM Spiel;";
+
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    var result = command.ExecuteScalar();
+                    count = Convert.ToInt32(result);
+                }
+            }
+
+            return count;
+        }
+
+        public static int? CleanSpiele()
+        {
+            int? count = null;
+            string sql = "DELETE " +
+                         "FROM Spiel;";
+
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    var result = command.ExecuteNonQuery();
+                    count = Convert.ToInt32(result);
+                }
+            }
+
+            return count;
+        }
+        
+        public static bool? IdExist(int Id)
+        {
+            bool? ret = null;
+
+            string sql = "SELECT COUNT(*) " +
+                         "FROM Spiel;" +
+                         "WHERE Id==@Id;";
+
+            using (var connection = new SQLiteConnection(LoadConnectionString()))
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandTimeout = 0;
+                    command.CommandText = sql;
+                    command.Parameters.Add(new SQLiteParameter("@Id", Id));
+                    var result = command.ExecuteScalar();
+                    if (Convert.ToInt32(result) > 0)
+                        ret = true;
+                    else if(Convert.ToInt32(result) == 0)
+                    {
+                        ret = false;
+                    }
+                }
+            }
+
+            if(ret == null)
+                throw new Exception("Unexpected behavior: IdExist returns null");
+            return ret;
+        }
     }
 }

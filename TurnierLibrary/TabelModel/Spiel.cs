@@ -6,7 +6,7 @@ namespace DemoLibary
     {
         public int? Id { get; set; }
         public int? Spieltag { get; set; }
-        public int? Zuschaueranzahl { get; set; }
+        public int? Zuschauerzahl { get; set; }
         public DateTime? Datum { get; set; }
         public int? Heimmanschaft { get; set; }
         public int? Auswaertsmannschaft { get; set; }
