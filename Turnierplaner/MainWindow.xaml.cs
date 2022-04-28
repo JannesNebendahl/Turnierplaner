@@ -1222,7 +1222,7 @@ namespace Turnierplaner
             var comboBox = (ComboBox)e.Source;
             if ((int)comboBox.SelectedValue <= 90 && (int)comboBox.SelectedValue >= 1)
             {
-                sqlFilterTore[1] = " WHERE Minutes <= " + (int)comboBox.SelectedValue;
+                sqlFilterTore[1] = " AND T.Zeitstempel <= " + (int)comboBox.SelectedValue;
             }
             else
             {
@@ -1236,7 +1236,7 @@ namespace Turnierplaner
             var comboBox = (ComboBox)e.Source;
             if((int)comboBox.SelectedValue <= 90 && (int)comboBox.SelectedValue >= 1)
             {
-                sqlFilterTore[0] = " WHERE Minutes >= " + (int)comboBox.SelectedValue;
+                sqlFilterTore[0] = " AND T.Zeitstempel >= " + (int)comboBox.SelectedValue;
             }
             else
             {
@@ -1252,7 +1252,7 @@ namespace Turnierplaner
             string text = (string)comboBoxItem.Content;
             if (text.Equals("Normales Tor") || text.Equals("Eigentor") || text.Equals("Elfmeter") || text.Equals("Kopfball"))
             {
-                sqlFilterTore[2] = " WHERE Typ == " + text;
+                sqlFilterTore[2] = " AND T.Typ == '" + text + "'";
             }
             else
             {
@@ -1263,8 +1263,17 @@ namespace Turnierplaner
 
         private void filterTore()
         {
-            string sql = "SELECT * " +
-                         "From Spiele";
+            string sql = "SELECT  T.Zeitstempel AS 'Minute', " +
+                         "SP.Vorname || ' ' || SP.Nachname AS 'Spieler', " +
+                         "T.Typ, " +
+                         "H.Kuerzel || ' vs ' || G.Kuerzel AS 'Spiel', " +
+                         "S.Datum AS 'Datum' " +
+                         "From Tor T, Spiel S, Mannschaften H, Mannschaften G, Spieler SP " +
+                         "WHERE  T.SpielID == S.Id " +
+                            "AND S.HeimmannschaftsId == H.Id " +
+                            "AND S.AuswaertsmannschaftsId == G.Id " +
+                            "AND T.Spieler == SP.Id ";
+
             foreach(string filter in sqlFilterTore)
             {
                 if(filter != null)

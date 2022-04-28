@@ -65,14 +65,12 @@ CREATE TABLE Pfeift
 
     create table Tor
 (
-    TorID       integer not null
-        constraint Tor_pk
-            primary key autoincrement UNIQUE,
-    Zeitstempel integer,
-    Spieler     integer,
-    Mannschaft  integer not null,
-    Typ         integer,
-    SpielID     integer not null
+    TorID       INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    Zeitstempel INTEGER,
+    Spieler     INTEGER,
+    Mannschaft  INTEGER NOT NULL,
+    Typ         INTEGER,
+    SpielID     INTEGER NOT NULL
 );
 create table Fairnesstabelle
 (

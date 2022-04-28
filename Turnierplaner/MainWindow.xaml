@@ -395,6 +395,7 @@
                             <ComboBox Grid.Row="0" Grid.Column="3" Height="24" Width="40" HorizontalAlignment="Left" Name="ddlToreFilternMinuteBis" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True" Margin="0,0,5,0" PreviewTextInput="ddlSpielFilternMinuteBis_PreviewTextInput" SelectionChanged="ddlSpielFilternMinuteBis_SelectionChanged"/>
                             <Label Content="Tortyp " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
                             <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Width="155" Height="24" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlToreFilterTortyp" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True" SelectionChanged="ddlErgebnisTorTyp_SelectionChanged">
+                                <ComboBoxItem>Alle</ComboBoxItem>
                                 <ComboBoxItem>Normales Tor</ComboBoxItem>
                                 <ComboBoxItem>Eigentor</ComboBoxItem>
                                 <ComboBoxItem>Elfmeter</ComboBoxItem>
@@ -402,7 +403,7 @@
                             </ComboBox>
                         </Grid>
                     </GroupBox>
-                    <DataGrid x:Name="dgTore" Grid.Row="0" Grid.Column="1" Width="490" Height="385" Margin="5,5,5,0" AutoGenerateColumns="True" CanUserSortColumns="True"/>
+                    <DataGrid x:Name="dgFilterTore" Grid.Row="0" Grid.Column="1" Width="490" Height="385" Margin="5,5,5,0" AutoGenerateColumns="True" CanUserSortColumns="True"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Ergebnis eintragen">
@@ -462,7 +463,7 @@
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <Button x:Name="btnAddTor" Grid.Row="0" Grid.Column="0" Height="24" Width="100" Margin="0,5,5,0" Click="btnAddTor_Click" VerticalAlignment="Top">Tor hinzufügen</Button>
-                            <DataGrid CanUserAddRows="false" IsReadOnly="true" Grid.Row="1" Grid.Column="0" Name="dgFilterTore" AutoGenerateColumns="False">
+                            <DataGrid CanUserAddRows="false" IsReadOnly="true" Grid.Row="1" Grid.Column="0" Name="dgTore" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Zeit" Binding="{Binding Path=Zeitstempel}" />
                                     <DataGridTextColumn Header="Mannschaft" Binding="{Binding Path=MannschaftString}" />
