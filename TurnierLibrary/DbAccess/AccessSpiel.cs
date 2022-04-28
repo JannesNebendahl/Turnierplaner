@@ -23,8 +23,9 @@ namespace TurnierLibrary
             }
         }
 
-        public static void StoreSpiel(Spiel spiel)
+        public static int? StoreSpiel(Spiel spiel)
         {
+            int? id = null;
             string sql = "INSERT INTO Spiel(Datum, Spieltag, Zuschaueranzahl, HeimmannschaftsID, AuswaertsmannschaftsID) " +
                          "VALUES (@Datum, @Spieltag, @Zuschaueranzahl, @HeimmannschaftsID, @AuswaertsmannschaftsID);" +
                          "SELECT last_insert_rowid();";
@@ -41,11 +42,12 @@ namespace TurnierLibrary
                     command.Parameters.Add(new SQLiteParameter("@Zuschaueranzahl", spiel.Zuschauerzahl));
                     command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsID", spiel.HeimmannschaftsId));
                     command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftsID", spiel.AuswaertsmannschaftsId));
-                    var result = command.ExecuteNonQuery();
-                    if (result <= 0)
-                        throw new Exception("Can't store Spiel ");
+                    var result = command.ExecuteScalar();
+                    id = Convert.ToInt32(result);
                 }
             }
+
+            return id;
         }
 
         public static int? CountSpiele()

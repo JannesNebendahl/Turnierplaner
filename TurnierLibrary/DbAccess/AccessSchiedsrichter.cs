@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 using System.Text;
 using TurnierLibrary.TabelModel;
@@ -26,6 +28,19 @@ namespace TurnierLibrary.DbAccess
                     if (result <= 0)
                         throw new Exception("Can't store Schiedsrichter " + schiedsrichter.Name);
                 }
+            }
+        }
+
+        public static List<Schiedsrichter> LoadAlphabetical()
+        {
+            string sql = "SELECT * " +
+                         "FROM Schiedsrichter " +
+                         "ORDER BY Vorname ASC;";
+
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<Schiedsrichter>(sql, new DynamicParameters());
+                return output.AsList();
             }
         }
     }

@@ -44,23 +44,24 @@ CREATE TABLE Spiel
     Datum                   DATE,
     Spieltag                INTEGER NOT NULL,
     Zuschaueranzahl           INTEGER,
-    HeimmannschaftsID       INTEGER NOT NULL REFERENCES Mannschaften,
-    AuswaertsmannschaftsID  INTEGER NOT NULL REFERENCES Mannschaften
+    HeimmannschaftsId       INTEGER NOT NULL REFERENCES Mannschaften,
+    AuswaertsmannschaftsId  INTEGER NOT NULL REFERENCES Mannschaften
 );
 
-create table Trainer
+CREATE TABLE Trainer
 (
-    TrainerID   integer not null
-        constraint Trainer_pk
-            primary key autoincrement,
-    Vorname     varchar not null,
-    Nachname    varchar not null,
-    Amtsantritt date,
-    Mannschaft  integer not null
+    TrainerID   INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    Vorname     VARCHAR NOT NULL,
+    Nachname    VARCHAR NOT NULL,
+    Amtsantritt DATE,
+    Mannschaft  INTEGER NOT NULL
 );
 
-create unique index Trainer_TrainerID_uindex
-    on Trainer (TrainerID);
+CREATE TABLE Pfeift
+(
+    SchiedsrichterId INTEGER NOT NULL REFERENCES Schiedsrichter,
+    SpielId INTEGER NOT NULL REFERENCES Spiel
+);
 
     create table Tor
 (
