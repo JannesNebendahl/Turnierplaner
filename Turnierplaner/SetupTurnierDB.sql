@@ -74,9 +74,7 @@ CREATE TABLE Pfeift
 );
 create table Fairnesstabelle
 (
-    SpielerId integer not null
-        constraint Fairnesstabelle_pk
-            primary key autoincrement UNIQUE,
+    SpielerId integer not null,
     Karte     varchar not null,
     SpielId   integer not null
 );

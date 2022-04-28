@@ -45,7 +45,7 @@ namespace Turnierplaner
         {
             if (ddlErgebnisZeit.Text != "" && ddlErgebnisTorMannschaft.Text != "" && ddlErgebnisTorSpieler.Text != "") 
             {
-                MainWindow form1 = new MainWindow();
+                MainWindow form1 = ((MainWindow)Application.Current.MainWindow);
                 Tor tor = new Tor();
                 tor.Zeitstempel = Int32.Parse(ddlErgebnisZeit.Text);
                 tor.Typ = ddlErgebnisTorTyp.Text;

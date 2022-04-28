@@ -32,7 +32,7 @@ namespace Turnierplaner
         {
             if (ddlErgebnisTorMannschaft.Text != "" && ddlErgebnisTorSpieler.Text != "")
             {
-                MainWindow form1 = new MainWindow();
+                MainWindow form1 = ((MainWindow)Application.Current.MainWindow);
                 Fairnesstabelle fairnesstabelle = new Fairnesstabelle();
                 fairnesstabelle.SpielID = spiel.Id;
 
