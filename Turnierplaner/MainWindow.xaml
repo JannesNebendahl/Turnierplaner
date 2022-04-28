@@ -331,8 +331,6 @@
                     <Button x:Name="btnErgebnisSave" Grid.Row="3" Grid.Column="0" Height="24" Width="100" Margin="168,5,173,0" VerticalAlignment="Top" Click="btnErgebnisSave_Click">Ergebnis speichern</Button>
                 </Grid>
             </TabItem>
-            <Button Content="Button"/>
-
         </TabControl>
 
     </Grid>
