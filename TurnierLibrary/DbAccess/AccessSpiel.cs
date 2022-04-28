@@ -46,9 +46,9 @@ namespace TurnierLibrary
                         command.CommandText = sql;
                         command.Parameters.Add(new SQLiteParameter("@Datum", spiel.Datum));
                         command.Parameters.Add(new SQLiteParameter("@Spieltag", spiel.Spieltag));
-                        command.Parameters.Add(new SQLiteParameter("@Zuschaueranzahl", spiel.Zuschaueranzahl));
-                        command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsID", spiel.Heimmanschaft));
-                        command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftID", spiel.Auswaertsmannschaft));
+                        command.Parameters.Add(new SQLiteParameter("@Zuschaueranzahl", spiel.Zuschauerzahl));
+                        command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsID", spiel.HeimmannschaftsID));
+                        command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftID", spiel.AuswaertsmannschaftsID));
                         var result = command.ExecuteNonQuery();
                         if (result <= 0)
                             throw new Exception("Can't store Spiel ");
@@ -58,6 +58,19 @@ namespace TurnierLibrary
             catch (Exception e)
             {
                 Console.Error.Write(e.Message);
+            }
+        }
+        public static List<Spiel> LoadGamesOfDate(DateTime date)
+        {
+            string sql = "SELECT s.Id, a.Name as Heim, b.Name as Gast, s.HeimmannschaftsId, s.AuswaertsmannschaftsId " +
+                         "From Spiel s, Mannschaften a, Mannschaften b " +
+                         "WHERE a.Id == s.HeimmannschaftsId AND s.AuswaertsmannschaftsId == b.Id AND strftime('%Y', Datum) IN ('" + date.Year + "') AND strftime('%m', Datum) IN ('" + date.Month.ToString("00") + "') AND strftime('%d', Datum) IN ('" + date.Day.ToString("00") + "') " +
+                         "ORDER BY a.Name";
+
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<Spiel>(sql, new DynamicParameters());
+                return output.AsList();
             }
         }
 
