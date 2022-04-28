@@ -24,6 +24,36 @@ namespace TurnierLibrary
             }
         }
 
+        public static List<Tor> LoadTorschuetzenliste(bool limit, string condition)
+        {
+            string sql = "SELECT s.Vorname, s.Nachname as Nachname, Count(*) as Toranzahl " +
+                         "From Tor t, Spieler s " +
+                         "WHERE Spieler NOT NULL AND t.Spieler == s.Id ";
+
+            switch (condition)
+            {
+                case "Elfmeter":
+                    sql = sql + " AND t.Typ == 'Elfmeter' ";
+                    break;
+                default:
+                    break;
+            }
+            sql = sql + "GROUP BY t.Spieler " +
+                        "ORDER BY t.Spieler desc"; ;
+
+            if (limit)
+            {
+                sql = sql + " limit 1";
+            }
+                         
+
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<Tor>(sql, new DynamicParameters());
+                return output.AsList();
+            }
+        }
+
         public static void StoreTor(Tor tor)
         {
             string sql = "INSERT INTO Tor (TorID, Zeitstempel, Spieler, Mannschaft, Typ, SpielID) " +

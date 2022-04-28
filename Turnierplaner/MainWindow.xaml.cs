@@ -954,6 +954,8 @@ namespace Turnierplaner
             SqliteDataAccess.LoadTableInDataGrid(dgSpielplan, sql);
         }
         #endregion Spielplan zeigen
+
+
         #region Spielergebnis
 
         List<Tor> torList = new List<Tor>();
@@ -962,10 +964,12 @@ namespace Turnierplaner
 
         private void btnAddTor_Click(object sender, RoutedEventArgs e)
         {
-            Window1 window1 = new Window1(ergebnisSpiel, torList);
-            window1.Show();
+            if (ddlErgebnisSpiel.Text != "")
+            {
+                Window1 window1 = new Window1(ergebnisSpiel, torList);
+                window1.Show();
+            }
         }
-        #endregion
 
         private void GetGames(object sender, SelectionChangedEventArgs e)
         {
@@ -979,9 +983,9 @@ namespace Turnierplaner
         }
         public void addTorToList(List<Tor> torListe)
         {
-            torList = torListe;
-            dgTore.ItemsSource = torListe;
-            dgTore.Items.Refresh();
+                torList = torListe;
+                dgTore.ItemsSource = torListe;
+                dgTore.Items.Refresh();
         }
 
         public void addKarteToList(List<Fairnesstabelle> fairnesstabelle)
@@ -993,8 +997,6 @@ namespace Turnierplaner
 
         private void btnErgebnisSave_Click(object sender, RoutedEventArgs e)
         {
-            addTorToList(torList);
-            //addKarteToList(listKarten);
             if (!String.IsNullOrEmpty(tbxErgebnisHeim.Text) && !String.IsNullOrEmpty(tbxErgebnisGast.Text) && torList.Count != 0)
             {
                 try
@@ -1012,6 +1014,17 @@ namespace Turnierplaner
                 {
 
                 }
+                torList.Clear();
+                dgTore.ItemsSource = torList;
+                dgTore.Items.Refresh();
+                listKarten.Clear();
+                dgKarten.ItemsSource = listKarten;
+                dgKarten.Items.Refresh();
+                tbxErgebnisHeim.Text = "";
+                tbxErgebnisGast.Text = "";
+                ddlErgebnisSpiel.Items.Clear();
+                dpErgebnisSpieltag.SelectedDate = DateTime.Now;
+                dpErgebnisSpieltag.Text = DateTime.Now.ToString();
             }
             else if (!String.IsNullOrEmpty(tbxErgebnisHeim.Text) && !String.IsNullOrEmpty(tbxErgebnisGast.Text))
             {
@@ -1032,18 +1045,18 @@ namespace Turnierplaner
                 {
 
                 }
-            }/*
-            torList.Clear();
-            dgTore.ItemsSource = torList;
-            dgTore.Items.Refresh();
-            listKarten.Clear();
-            dgKarten.ItemsSource = listKarten;
-            dgKarten.Items.Refresh();
-            tbxErgebnisHeim.Text = "";
-            tbxErgebnisGast.Text = "";
-            ddlErgebnisSpiel.Items.Clear();
-            dpErgebnisSpieltag.SelectedDate = DateTime.Now;
-            dpErgebnisSpieltag.Text = DateTime.Now.ToString();*/
+                torList.Clear();
+                dgTore.ItemsSource = torList;
+                dgTore.Items.Refresh();
+                listKarten.Clear();
+                dgKarten.ItemsSource = listKarten;
+                dgKarten.Items.Refresh();
+                tbxErgebnisHeim.Text = "";
+                tbxErgebnisGast.Text = "";
+                ddlErgebnisSpiel.Items.Clear();
+                dpErgebnisSpieltag.SelectedDate = DateTime.Now;
+                dpErgebnisSpieltag.Text = DateTime.Now.ToString();
+            }
         }
 
         private void fillTorList()
@@ -1087,8 +1100,11 @@ namespace Turnierplaner
 
         private void btnAddKarte_Click(object sender, RoutedEventArgs e)
         {
-            Window2 window2 = new Window2(ergebnisSpiel, listKarten);
-            window2.Show();
+            if (ddlErgebnisSpiel.Text != "")
+            {
+                Window2 window2 = new Window2(ergebnisSpiel, listKarten);
+                window2.Show();
+            }
         }
 
         private void btnClearTore_Click(object sender, RoutedEventArgs e)
@@ -1103,5 +1119,47 @@ namespace Turnierplaner
             dgKarten.ItemsSource = listKarten;
             dgKarten.Items.Refresh();
         }
+        #endregion
+
+        #region Statistiken
+        private void loadStatistiken(object sender, MouseButtonEventArgs e)
+        {
+            loadTorStatistiken();
+            loadFairnesstablle();
+        }
+
+        #region Tore
+        private void loadTorStatistiken()
+        {
+            List<Tor> torschuetzenkoenig = new List<Tor>();
+            torschuetzenkoenig = AccessTor.LoadTorschuetzenliste(true, "");
+            lbTorschuetzenkoenig.Content = torschuetzenkoenig[0].Vorname + " " + torschuetzenkoenig[0].Nachname + ", Tore: " + torschuetzenkoenig[0].Toranzahl;
+
+            List<Tor> meisteElfmetertore = new List<Tor>();
+            meisteElfmetertore = AccessTor.LoadTorschuetzenliste(true, "Elfmeter");
+            lbmeisteElfmetertore.Content = meisteElfmetertore[0].Vorname + " " + meisteElfmetertore[0].Nachname + ", Tore: " + meisteElfmetertore[0].Toranzahl;
+
+            List<Tor> torschuetzenliste = new List<Tor>();
+            torschuetzenliste = AccessTor.LoadTorschuetzenliste(false, "");
+
+            int platzierung = 1;
+            foreach (Tor item in torschuetzenliste)
+            {
+                item.Platzierung = platzierung;
+                platzierung++;
+            }
+            dgTorschuetzenliste.ItemsSource = torschuetzenliste;
+            dgTorschuetzenliste.Items.Refresh();
+        }
+        #endregion
+
+        #region Fairness
+        private void loadFairnesstablle()
+        {
+            List<Fairnesstabelle> fairnesstablle = new List<Fairnesstabelle>();
+            fairnesstablle = AccessFairnesstabelle.LoadFairnesstabelle();
+        }
+        #endregion
+        #endregion
     }
 }

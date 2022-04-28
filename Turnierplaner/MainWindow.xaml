@@ -447,6 +447,69 @@
                     <Button x:Name="btnErgebnisSave" Grid.Row="3" Grid.Column="0" Height="24" Width="100" Margin="168,5,173,0" VerticalAlignment="Top" Click="btnErgebnisSave_Click">Ergebnis speichern</Button>
                 </Grid>
             </TabItem>
+            <TabItem Header="Statistiken" x:Name="Statistiken" MouseLeftButtonUp="loadStatistiken">
+                <Grid HorizontalAlignment="center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="535.09" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <ScrollViewer Width ="780" Height="300"  CanContentScroll="True" Margin="-122,10,-123,-10" >
+                        <StackPanel>
+                            <GroupBox Header="Torstatistiken">
+                                <Grid HorizontalAlignment="left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition Width="auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label  Content="Torschützenkönig: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                                    <Label  Content="meiste Elfmetertore: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                                    <Label x:Name="lbTorschuetzenkoenig" Content=": " Grid.Row="0" Grid.Column="1" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                                    <Label x:Name="lbmeisteElfmetertore" Content="" Grid.Row="1" Grid.Column="1" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                                    <Label  Content="Torschützenliste: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                                    <DataGrid Grid.Row="3" Grid.Column="0" CanUserAddRows="false" IsReadOnly="true" Name="dgTorschuetzenliste" AutoGenerateColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Platzierung" Binding="{Binding Platzierung}" />
+                                            <DataGridTextColumn Header="Vornname" Binding="{Binding Vorname}" />
+                                            <DataGridTextColumn Header="Nachname" Binding="{Binding Nachname}" />
+                                            <DataGridTextColumn Header="Tore" Binding="{Binding Toranzahl}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </GroupBox>
+
+                            <GroupBox Header="Fairnesstabelle">
+                                <Grid HorizontalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="auto" />
+                                    </Grid.RowDefinitions>
+                                    <DataGrid CanUserAddRows="false" IsReadOnly="true" Grid.Row="1" Grid.Column="1" Name="dgFairnesstablle" AutoGenerateColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Platzierung" Binding="{Binding Platzierung}" />
+                                            <DataGridTextColumn Header="Mannschaft" Binding="{Binding Mannschaft}" />
+                                            <DataGridTextColumn Header="GelbeKarte" Binding="{Binding GelbeKarte}" />
+                                            <DataGridTextColumn Header="RoteKarte" Binding="{Binding RoteKarte}" />
+                                            <DataGridTextColumn Header="Punkte" Binding="{Binding Punkte}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

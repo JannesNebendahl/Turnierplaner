@@ -14,5 +14,9 @@ namespace TurnierLibrary
         public int? SpielID { get; set; }
         public string? MannschaftString { get; set; }
         public string? SpielerString { get; set; }
+        public string? Vorname { get; set; }
+        public string? Nachname { get; set; }
+        public int? Toranzahl { get; set; }
+        public int? Platzierung { get; set; }
     }
 }
