@@ -49,6 +49,20 @@ namespace TurnierLibrary
             }
         }
 
+        public static List<Spieler> LoadSpielerAlphabeticalFromMannschaft(int? ID)
+        {
+            string sql = "SELECT Vorname, Nachname,  Id " +
+                         "FROM Spieler " +
+                         "WHERE MannschaftsID == " + ID +
+                         " ORDER BY Vorname ASC;";
+
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<Spieler>(sql, new DynamicParameters());
+                return output.AsList();
+            }
+        }
+
         public static void ChangeMannschaft(int spielerId, int newMannschaftsId)
         {
             string sql = "UPDATE Spieler " +

@@ -36,6 +36,7 @@ namespace Turnierplaner
         List<Spieler> ddlSpieler;
         List<Position> ddlPosition;
         List<Mannschaft> ddlMannschaften;
+        List<Spiel> ddlSpiel;
 
         private void BindSpielerDropDown()
         {
@@ -639,20 +640,20 @@ namespace Turnierplaner
             {
                 if (string.Equals(mannschaft.Name, ddlSpielHeimMannschaften.Text))
                 {
-                    spiel.Heimmanschaft = mannschaft.Id;
+                    spiel.HeimmannschaftsId = mannschaft.Id;
                 }
                 else if (string.Equals(mannschaft.Name, ddlSpielAuswaertsMannschaften.Text))
                 {
-                    spiel.Auswaertsmannschaft = mannschaft.Id;
+                    spiel.AuswaertsmannschaftsId = mannschaft.Id;
                 }
             }
 
-            if(spiel.Heimmanschaft == null)
+            if(spiel.HeimmannschaftsId == null)
             {
                 bSpielHeimMannschaftenBorder.BorderBrush = Brushes.Red;
                 return;
             }
-            if(spiel.Auswaertsmannschaft == null)
+            if(spiel.AuswaertsmannschaftsId == null)
             {
                 bSpielAuswaertsMannschaftenBorder.BorderBrush = Brushes.Red;
                 return;
@@ -892,8 +893,8 @@ namespace Turnierplaner
             for (int i = 0; i < (teamsCount / 2); i++)
             {
                 Spiel spiel = new Spiel();
-                spiel.Heimmanschaft = sideA[i];
-                spiel.Auswaertsmannschaft = sideB[i];
+                spiel.HeimmannschaftsId = sideA[i];
+                spiel.AuswaertsmannschaftsId = sideB[i];
                 spiel.Spieltag = spieltag;
                 if (spieltagDate != null)
                 {
@@ -923,7 +924,7 @@ namespace Turnierplaner
             if (dummy == null)
                 return;
 
-            spielplan.RemoveAll(spiel => spiel.Heimmanschaft == dummy.Id || spiel.Auswaertsmannschaft == dummy.Id);
+            spielplan.RemoveAll(spiel => spiel.HeimmannschaftsId == dummy.Id || spiel.AuswaertsmannschaftsId == dummy.Id);
             
         }
 
@@ -953,6 +954,154 @@ namespace Turnierplaner
             SqliteDataAccess.LoadTableInDataGrid(dgSpielplan, sql);
         }
         #endregion Spielplan zeigen
+        #region Spielergebnis
 
+        List<Tor> torList = new List<Tor>();
+        List<Fairnesstabelle> listKarten = new List<Fairnesstabelle>();
+        Spiel ergebnisSpiel = new Spiel();
+
+        private void btnAddTor_Click(object sender, RoutedEventArgs e)
+        {
+            Window1 window1 = new Window1(ergebnisSpiel, torList);
+            window1.Show();
+        }
+        #endregion
+
+        private void GetGames(object sender, SelectionChangedEventArgs e)
+        {
+            ddlSpiel = AccessSpiel.LoadGamesOfDate(dpErgebnisSpieltag.SelectedDate.Value);
+            ddlErgebnisSpiel.Items.Clear();
+
+            for (int i = 0; i < ddlSpiel.Count; i++)
+            {
+                ddlErgebnisSpiel.Items.Add("(" + ddlSpiel[i].Id + ") " + ddlSpiel[i].Heim + " : " + ddlSpiel[i].Gast);
+            }
+        }
+        public void addTorToList(List<Tor> torListe)
+        {
+            torList = torListe;
+            dgTore.ItemsSource = torListe;
+            dgTore.Items.Refresh();
+        }
+
+        public void addKarteToList(List<Fairnesstabelle> fairnesstabelle)
+        {
+            listKarten = fairnesstabelle;
+            dgKarten.ItemsSource = listKarten;
+            dgKarten.Items.Refresh();
+        }
+
+        private void btnErgebnisSave_Click(object sender, RoutedEventArgs e)
+        {
+            addTorToList(torList);
+            //addKarteToList(listKarten);
+            if (!String.IsNullOrEmpty(tbxErgebnisHeim.Text) && !String.IsNullOrEmpty(tbxErgebnisGast.Text) && torList.Count != 0)
+            {
+                try
+                {
+                    foreach (Tor tor in torList)
+                    {
+                        AccessTor.StoreTor(tor);
+                    }
+                    foreach (Fairnesstabelle karte in listKarten)
+                    {
+                        AccessFairnesstabelle.StoreKarte(karte);
+                    }
+                }
+                catch
+                {
+
+                }
+            }
+            else if (!String.IsNullOrEmpty(tbxErgebnisHeim.Text) && !String.IsNullOrEmpty(tbxErgebnisGast.Text))
+            {
+                fillTorList();
+
+                try
+                {
+                    foreach (Tor tor in torList)
+                    {
+                        AccessTor.StoreTor(tor);
+                    }
+                    foreach (Fairnesstabelle karte in listKarten)
+                    {
+                        AccessFairnesstabelle.StoreKarte(karte);
+                    }
+                }
+                catch
+                {
+
+                }
+            }/*
+            torList.Clear();
+            dgTore.ItemsSource = torList;
+            dgTore.Items.Refresh();
+            listKarten.Clear();
+            dgKarten.ItemsSource = listKarten;
+            dgKarten.Items.Refresh();
+            tbxErgebnisHeim.Text = "";
+            tbxErgebnisGast.Text = "";
+            ddlErgebnisSpiel.Items.Clear();
+            dpErgebnisSpieltag.SelectedDate = DateTime.Now;
+            dpErgebnisSpieltag.Text = DateTime.Now.ToString();*/
+        }
+
+        private void fillTorList()
+        {
+            torList.Clear();
+            Tor torHeim = new Tor();
+            torHeim.Mannschaft = ergebnisSpiel.HeimmannschaftsId;
+            torHeim.SpielID = ergebnisSpiel.Id;
+
+            for (int i = 0; i < Int32.Parse(tbxErgebnisHeim.Text); i++)
+            {
+                torList.Add(torHeim);
+            }
+            Tor torGast = new Tor();
+            torGast.Mannschaft = ergebnisSpiel.AuswaertsmannschaftsId;
+            torGast.SpielID = ergebnisSpiel.Id;
+            for (int i = 0; i < Int32.Parse(tbxErgebnisGast.Text); i++)
+            {
+                torList.Add(torGast);
+            }
+        }
+
+        private void ddlErgebnisSpiel_ContextChanged(object sender, EventArgs e)
+        {
+            if (ddlErgebnisSpiel.SelectedValue != null)
+            {
+                ergebnisSpiel.Id = Int32.Parse(ddlErgebnisSpiel.SelectedValue.ToString().Substring(1, 1));
+
+                foreach (Spiel spiel in ddlSpiel)
+                {
+                    if (ergebnisSpiel.Id == spiel.Id)
+                    {
+                        ergebnisSpiel.HeimmannschaftsId = spiel.HeimmannschaftsId;
+                        ergebnisSpiel.AuswaertsmannschaftsId = spiel.AuswaertsmannschaftsId;
+                        ergebnisSpiel.Heim = spiel.Heim;
+                        ergebnisSpiel.Gast = spiel.Gast;
+                    }
+                }
+            }
+        }
+
+        private void btnAddKarte_Click(object sender, RoutedEventArgs e)
+        {
+            Window2 window2 = new Window2(ergebnisSpiel, listKarten);
+            window2.Show();
+        }
+
+        private void btnClearTore_Click(object sender, RoutedEventArgs e)
+        {
+            torList.Clear();
+            dgTore.ItemsSource = torList;
+            dgTore.Items.Refresh();
+        }
+        private void btnClearKarten_Click(object sender, RoutedEventArgs e)
+        {
+            listKarten.Clear();
+            dgKarten.ItemsSource = listKarten;
+            dgKarten.Items.Refresh();
+        }
     }
 }

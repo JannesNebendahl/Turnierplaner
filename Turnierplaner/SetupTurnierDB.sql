@@ -52,7 +52,7 @@ create table Trainer
 (
     TrainerID   integer not null
         constraint Trainer_pk
-            primary key,
+            primary key autoincrement,
     Vorname     varchar not null,
     Nachname    varchar not null,
     Amtsantritt date,
@@ -61,6 +61,27 @@ create table Trainer
 
 create unique index Trainer_TrainerID_uindex
     on Trainer (TrainerID);
+
+    create table Tor
+(
+    TorID       integer not null
+        constraint Tor_pk
+            primary key autoincrement UNIQUE,
+    Zeitstempel integer,
+    Spieler     integer,
+    Mannschaft  integer not null,
+    Typ         integer,
+    SpielID     integer not null
+);
+create table Fairnesstabelle
+(
+    SpielerId integer not null
+        constraint Fairnesstabelle_pk
+            primary key autoincrement UNIQUE,
+    Karte     varchar not null,
+    SpielId   integer not null
+);
+
 
 --Insert default Data
 INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (1, 'Torwart', 'TW');
@@ -76,6 +97,7 @@ INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (10, 'Rechterflügel', 'RF');
 INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (11, 'Linkerflügel', 'LF');
 INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (12, 'Mittelstürmer', 'MS');
 INSERT INTO Positionen (Id, Name, Kuerzel) VALUES (13, 'Stürmer', 'ST');
+
 
 --Default data of Jannes
 INSERT INTO Mannschaften (Id, Name, Kuerzel, Entstehungsjahr, Kapitan) VALUES (1, 'FC Bayern München', 'FCB', '1900-02-27 00:00:00', 2);

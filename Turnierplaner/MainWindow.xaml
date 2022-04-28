@@ -367,6 +367,86 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
+            <TabItem Header="Ergebnis eintragen">
+                <Grid HorizontalAlignment="center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Spiel suchen" Grid.Row="0" Grid.Column="1">
+                        <Grid HorizontalAlignment="center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Label x:Name="lblErgebnisDatum" Content="Datum*: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                            <DatePicker x:Name="dpErgebnisSpieltag" Grid.Row="1" Grid.Column="0" Height="24" Margin="0,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" SelectedDateChanged="GetGames"/>
+                            <Label x:Name="lblErgebnisSpiel" Content="Spiel*: " Grid.Row="0" Grid.Column="1" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" Height="24" Width="260" HorizontalAlignment="Left" Name="ddlErgebnisSpiel" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True" DropDownClosed="ddlErgebnisSpiel_ContextChanged"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Ergebnis" Grid.Row="1" Grid.Column="0">
+                        <Grid HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Label  Content="Heim: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxErgebnisHeim" Grid.Row="1" Grid.Column="0" Height="24" Width="200" Margin="0,5,5,5" IsReadOnly="False"/>
+                            <Label x:Name="lblErgebnisDP" Content=" : " Grid.Row="1" Grid.Column="1" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                            <Label  x:Name="lblErgebnisGast" Content="Gast" Grid.Row="0" Grid.Column="3" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxErgebnisGast" Grid.Row="1" Grid.Column="3" Height="24" Width="200" Margin="0,5,5,5" IsReadOnly="False"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Tore / Karten" Grid.Row="2" Grid.Column="0">
+                        <Grid HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Button x:Name="btnAddTor" Grid.Row="0" Grid.Column="0" Height="24" Width="100" Margin="0,5,5,0" Click="btnAddTor_Click" VerticalAlignment="Top">Tor hinzufügen</Button>
+                            <DataGrid CanUserAddRows="false" IsReadOnly="true" Grid.Row="1" Grid.Column="0" Name="dgTore" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Zeit" Binding="{Binding Path=Zeitstempel}" />
+                                    <DataGridTextColumn Header="Mannschaft" Binding="{Binding Path=MannschaftString}" />
+                                    <DataGridTextColumn Header="Spieler" Binding="{Binding Path=SpielerString}" />
+                                    <DataGridTextColumn Header="Tortyp" Binding="{Binding Path=Typ}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button x:Name="btnClearTore" Grid.Row="2" Grid.Column="0" Width="80" Margin="54,5,59,0" Click="btnClearTore_Click">Liste löschen</Button>
+                            <Button x:Name="btnAddKarte" Grid.Row="0" Grid.Column="1" Height="24" Margin="0,5,5,5" Width="100" Click="btnAddKarte_Click" >Karte hinzufügen</Button>
+                            <DataGrid CanUserAddRows="false" IsReadOnly="true" Grid.Row="1" Grid.Column="1" Name="dgKarten" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Typ" Binding="{Binding Karte}" />
+                                    <DataGridTextColumn Header="Mannschaft" Binding="{Binding MannschaftString}" />
+                                    <DataGridTextColumn Header="Spieler" Binding="{Binding SpielerString}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button x:Name="btnClearKarten" Grid.Row="3" Grid.Column="1" Height="24" Width="80" Margin="0,5,5,0"  VerticalAlignment="Top" Click="btnClearKarten_Click">Liste löschen</Button>
+                        </Grid>
+                    </GroupBox>
+                    <Button x:Name="btnErgebnisSave" Grid.Row="3" Grid.Column="0" Height="24" Width="100" Margin="168,5,173,0" VerticalAlignment="Top" Click="btnErgebnisSave_Click">Ergebnis speichern</Button>
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

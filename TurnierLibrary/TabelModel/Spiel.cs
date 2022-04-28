@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DemoLibary
+namespace TurnierLibrary
 {
     public class Spiel
     {
@@ -8,8 +8,10 @@ namespace DemoLibary
         public int? Spieltag { get; set; }
         public int? Zuschauerzahl { get; set; }
         public DateTime? Datum { get; set; }
-        public int? Heimmanschaft { get; set; }
-        public int? Auswaertsmannschaft { get; set; }
+        public int? HeimmannschaftsId { get; set; }
+        public int? AuswaertsmannschaftsId { get; set; }
+        public string? Heim { get; set; }
+        public string? Gast { get; set; }
         public override string ToString()
         {
             return Spieltag.ToString();

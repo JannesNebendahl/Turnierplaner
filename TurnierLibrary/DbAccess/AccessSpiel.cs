@@ -25,8 +25,8 @@ namespace TurnierLibrary
 
         public static void StoreSpiel(Spiel spiel)
         {
-            string sql = "INSERT INTO Spiel(Datum, Spieltag, Zuschaueranzahl, HeimmannschaftsId, AuswaertsmannschaftsId) " +
-                         "VALUES (@Datum, @Spieltag, @Zuschaueranzahl, @HeimmannschaftsId, @AuswaertsmannschaftsId);" +
+            string sql = "INSERT INTO Spiel(Datum, Spieltag, Zuschaueranzahl, HeimmannschaftsID, AuswaertsmannschaftsID) " +
+                         "VALUES (@Datum, @Spieltag, @Zuschaueranzahl, @HeimmannschaftsID, @AuswaertsmannschaftsID);" +
                          "SELECT last_insert_rowid();";
 
             using (var connection = new SQLiteConnection(LoadConnectionString()))
@@ -39,8 +39,8 @@ namespace TurnierLibrary
                     command.Parameters.Add(new SQLiteParameter("@Datum", spiel.Datum));
                     command.Parameters.Add(new SQLiteParameter("@Spieltag", spiel.Spieltag));
                     command.Parameters.Add(new SQLiteParameter("@Zuschaueranzahl", spiel.Zuschauerzahl));
-                    command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsId", spiel.Heimmanschaft));
-                    command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftsId", spiel.Auswaertsmannschaft));
+                    command.Parameters.Add(new SQLiteParameter("@HeimmannschaftsID", spiel.HeimmannschaftsId));
+                    command.Parameters.Add(new SQLiteParameter("@AuswaertsmannschaftsID", spiel.AuswaertsmannschaftsId));
                     var result = command.ExecuteNonQuery();
                     if (result <= 0)
                         throw new Exception("Can't store Spiel ");
@@ -89,7 +89,7 @@ namespace TurnierLibrary
 
             return count;
         }
-        
+
         public static bool? IdExist(int Id)
         {
             bool? ret = null;
@@ -109,16 +109,30 @@ namespace TurnierLibrary
                     var result = command.ExecuteScalar();
                     if (Convert.ToInt32(result) > 0)
                         ret = true;
-                    else if(Convert.ToInt32(result) == 0)
+                    else if (Convert.ToInt32(result) == 0)
                     {
                         ret = false;
                     }
                 }
             }
 
-            if(ret == null)
+            if (ret == null)
                 throw new Exception("Unexpected behavior: IdExist returns null");
             return ret;
+        }
+
+        public static List<Spiel> LoadGamesOfDate(DateTime date)
+        {
+            string sql = "SELECT s.Id, a.Name as Heim, b.Name as Gast, s.HeimmannschaftsID, s.AuswaertsmannschaftsID " +
+                         "From Spiel s, Mannschaften a, Mannschaften b " +
+                         "WHERE a.Id == s.HeimmannschaftsID AND s.AuswaertsmannschaftsID == b.Id AND strftime('%Y', Datum) IN ('" + date.Year + "') AND strftime('%m', Datum) IN ('" + date.Month.ToString("00") + "') AND strftime('%d', Datum) IN ('" + date.Day.ToString("00") + "') " +
+                         "ORDER BY a.Name";
+
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<Spiel>(sql, new DynamicParameters());
+                return output.AsList();
+            }
         }
     }
 }
