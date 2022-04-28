@@ -1330,7 +1330,7 @@ namespace Turnierplaner
                 meisteElfmetertore = AccessTor.LoadTorschuetzenliste(true, "Elfmeter");
                 if (meisteElfmetertore.Count != 0)
                 {                   
-                    lbmeisteElfmetertore.Content = meisteElfmetertore[0].Vorname + " " + meisteElfmetertore[0].Nachname + ", Tore: " + meisteElfmetertore[0].Toranzahl;
+                    lbmeisteElfmetertore.Content = meisteElfmetertore[0].Vorname + " " + meisteElfmetertore[0].Nachname + ", Elfmetertore: " + meisteElfmetertore[0].Toranzahl;
                 }
 
                 List<Tor> torschuetzenliste = new List<Tor>();
@@ -1344,6 +1344,11 @@ namespace Turnierplaner
                 }
                 dgTorschuetzenliste.ItemsSource = torschuetzenliste;
                 dgTorschuetzenliste.Items.Refresh();
+            }
+            else
+            {
+                lbTorschuetzenkoenig.Content = "kein Torschütze vorhanden";
+                lbmeisteElfmetertore.Content = "kein Torschütze mit Elfmetertoren vorhanden.";
             }
         }
         #endregion
