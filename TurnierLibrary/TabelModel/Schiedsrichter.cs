@@ -6,6 +6,7 @@ namespace TurnierLibrary.TabelModel
 {
     public class Schiedsrichter
     {
+        public int? Id { get; set; }
         public String Vorname { get; set; }
         public String Nachname { get; set; }
         public string Name => Vorname + " " + Nachname;

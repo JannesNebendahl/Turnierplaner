@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Turnierplaner"
         mc:Ignorable="d"
-        Title="Turnierplaner" Height="500" Width="800">
+        Title="Turnierplaner" Height="510" Width="890">
     <Grid>
-        <TabControl>
+        <TabControl >
             <TabItem Header="DB befüllen">
                 <Grid HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
@@ -31,7 +31,6 @@
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
-
                             <Label Content="Name*: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
                             <TextBox x:Name="tbxMannschaftenName" Grid.Row="0" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                             <Label Content="Kürzel*: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
@@ -105,15 +104,12 @@
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
-
                             <Label x:Name="lblTrainerName" Content="Trainer Vorname*: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
                             <TextBox x:Name="tbxTrainerVorname" Grid.Row="0" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5"></TextBox>
                             <Label x:Name="lblTrainerNachname" Content="Trainer Nachname*: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
                             <TextBox x:Name="tbxTrainerNachname" Grid.Row="2" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5"></TextBox>
                             <Label x:Name="TrainerMannschaft" Content="Mannschaft*: " Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <ComboBox Grid.Row="3" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlTrainerMannschaft" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True">
-
-                            </ComboBox>
+                            <ComboBox Grid.Row="3" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlTrainerMannschaft" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True"/>
                             <Label x:Name="TrainerAmtsAntritt" Content="Amtsantritt: " Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
                             <DatePicker x:Name="dpTrainerAmtsantritt" Grid.Row="4" Grid.Column="1" Height="24" Margin="0,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
                             <Label Content="requierd *" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" FontStyle="Italic" Foreground="Gray"/>
@@ -167,7 +163,6 @@
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
-
                             <Label Content="Spieler*: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
                             <Border x:Name="bTransferSpielerBorder" BorderThickness="1" Grid.Row="0" Grid.Column="1" Height="26" Width="202" Margin="0,0,5,0" HorizontalAlignment="Left">
                                 <ComboBox Height="24" Width="200" HorizontalAlignment="Left" Name="cbTransferSpieler" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True" SelectionChanged="cbTransferSpieler_SelectionChanged">
@@ -205,7 +200,6 @@
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
-
                             <Label Content="Spieler*: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
                             <Border x:Name="bChangePositionSpielerBorder" BorderThickness="1" Grid.Row="0" Grid.Column="1" Height="26" Width="202" Margin="0,0,5,0" HorizontalAlignment="Left">
                                 <ComboBox Height="24" Width="200" HorizontalAlignment="Left" Name="cbChangePositionSpieler" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True" SelectionChanged="cbChangePositionSpieler_SelectionChanged">
@@ -226,63 +220,6 @@
                             </ComboBox>
                             <Button x:Name="btnChangeSpielerPosition" Grid.Row="2" Grid.Column="1" Height="24" Margin="0,5,5,5" Click="btnChangeSpielerPosition_Click" >Spieler Position ändern</Button>
                             <Label Content="requierd *" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" FontStyle="Italic" Foreground="Gray" Margin="-52,0,0,0"/>
-                        </Grid>
-                    </GroupBox>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Spiel erstellen">
-                <Grid HorizontalAlignment="Left">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-                    <GroupBox Header="Spiel zu DB hinzufügen" Grid.Row="0" Grid.Column="0">
-                        <Grid HorizontalAlignment="Right">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                            </Grid.RowDefinitions>
-
-                            <Label Content="Spieltag*: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <TextBox x:Name="tbxSpieltag" Grid.Row="0" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" PreviewTextInput="tbxSpieltag_PreviewTextInput"></TextBox>
-                            <Label Content="Datum: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <DatePicker x:Name="dpDatum" Grid.Row="1" Grid.Column="1" Height="24" Margin="0,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-                            <Label Content="Zuschaueranzahl: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <TextBox x:Name="tbxZuschaueranzahl" Grid.Row="2" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" PreviewTextInput="tbxZuschaueranzahl_PreviewTextInput"></TextBox>
-                            <Label Content="Heimmannschaft*: " Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <Border x:Name="bSpielHeimMannschaftenBorder" BorderThickness="1" Grid.Row="3" Grid.Column="1" Height="26" Width="202" Margin="0,0,5,0" HorizontalAlignment="Left">
-                                <ComboBox Height="24" Width="200" HorizontalAlignment="Left" Name="ddlSpielHeimMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Label Name="ddlSpielHeimMannschaftenItem" Content="{Binding Name}"/>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </Border>
-                            <Label Content="Auswährtsmannschaft*: " Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <Border x:Name="bSpielAuswaertsMannschaftenBorder" BorderThickness="1" Grid.Row="4" Grid.Column="1" Height="26" Width="202" Margin="0,0,5,0" HorizontalAlignment="Left">
-                                <ComboBox Height="24" Width="200" HorizontalAlignment="Left" Name="ddlSpielAuswaertsMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Label Name="ddlSpielAuswaertsMannschaften" Content="{Binding Name}"/>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </Border>
-                            <Button x:Name="btnAddSpiel" Grid.Row="5" Grid.Column="1" Height="24" Margin="0,5,5,5" Click="BtnAddSpiel_Click" >Spiel hinzufügen</Button>
-                            <Label Content="requierd *" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" FontStyle="Italic" Foreground="Gray" Margin="-10,0,0,0"/>
                         </Grid>
                     </GroupBox>
                 </Grid>
@@ -309,7 +246,7 @@
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <Label Content="Tabelle: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <ComboBox x:Name="cbZeigenTabelle" Grid.Row="0" Grid.Column="1" Height="24">
+                            <ComboBox x:Name="cbZeigenTabelle" Grid.Row="0" Grid.Column="1" Height="24" SelectionChanged="cbZeigenTabelle_SelectionChanged" >
                                 <ComboBoxItem Content="Mannschaften" />
                                 <ComboBoxItem Content="Positionen" />
                                 <ComboBoxItem Content="Schiedsrichter" />
@@ -318,12 +255,11 @@
                                 <ComboBoxItem Content="SpieltAuf" />
                             </ComboBox>
                             <DataGrid x:Name="dgZeigenTabelle" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="600" Height="300" AutoGenerateColumns="True"/>
-                            <Button x:Name="btnZeigenTabelle" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Height="24" Margin="0,5,0,5" Click="btnZeigenTabelle_Click" >Tabelle erneut laden</Button>
                         </Grid>
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <TabItem Header="Turnier Erstellen">
+            <TabItem Header="Spielplan">
                 <Grid HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
@@ -332,26 +268,87 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
-                    <GroupBox Header="Jeder gegen jeden Turnier" Grid.Row="0" Grid.Column="0">
-                        <Grid>
+                    <GroupBox Header="Jeder gegen jeden Spielplan" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Right">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <Label Content="Erster Spieltag: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <DatePicker x:Name="dpCreateTrunier1Spieltag" Grid.Row="0" Grid.Column="1" Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                            <DatePicker x:Name="dpCreateTrunier1Spieltag" Grid.Row="0" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
                             <Label Content="Letzter Spieltag: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <DatePicker x:Name="dpCreateTrunierLastSpieltag" Grid.Row="1" Grid.Column="1" Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-                            <Button x:Name="btnCreateTurnierJederVsJeden" Grid.Row="2" Grid.Column="1" Click="btnCreateTurnierJederVsJeden_Click">Turnier generieren</Button>
+                            <DatePicker x:Name="dpCreateTrunierLastSpieltag" Grid.Row="1" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                            <Label Content="Schiedsrichter ansetzen: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <CheckBox x:Name="cCreateTurnierSchiedsrichterAnsetzen" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,8,0,0" Height="20" IsChecked="False">
+                                <CheckBox.LayoutTransform>
+                                    <ScaleTransform ScaleX="1.3" ScaleY="1.3"/>
+                                </CheckBox.LayoutTransform>
+                            </CheckBox>
+                            <Button x:Name="btnCreateTurnierJederVsJeden" Grid.Row="3" Grid.Column="1" Margin="0,5,5,5" Click="btnCreateTurnierJederVsJeden_Click">Turnier generieren</Button>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Spielplan" Grid.Row="0" Grid.Column="1">
+                    <GroupBox Header="Spiel erstellen" Grid.Row="1" Grid.Column="0">
+                        <Grid HorizontalAlignment="Right">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Label Content="Spieltag*: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxSpieltag" Grid.Row="0" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" PreviewTextInput="tbxSpieltag_PreviewTextInput"></TextBox>
+                            <Label Content="Datum: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <DatePicker x:Name="dpDatum" Grid.Row="1" Grid.Column="1" Height="24" Margin="0,0,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                            <Label Content="Zuschaueranzahl: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxZuschaueranzahl" Grid.Row="2" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" PreviewTextInput="tbxZuschaueranzahl_PreviewTextInput"></TextBox>
+                            <Label Content="Schiedsrichter: " Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <ComboBox Name="cbSpielSchiedsrichter" Grid.Row="3" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" IsEditable="True" StaysOpenOnEdit="True">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Name="ddlSpielSchiedsrichterItem" Content="{Binding Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Label Content="Heimmannschaft*: " Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <Border x:Name="bSpielHeimMannschaftenBorder" BorderThickness="1" Grid.Row="4" Grid.Column="1" Height="26" Width="202" Margin="0,0,5,0" HorizontalAlignment="Left">
+                                <ComboBox Height="24" Width="200" HorizontalAlignment="Left" Name="ddlSpielHeimMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Label Name="ddlSpielHeimMannschaftenItem" Content="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Border>
+                            <Label Content="Auswährtsmannschaft*: " Grid.Row="5" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <Border x:Name="bSpielAuswaertsMannschaftenBorder" BorderThickness="1" Grid.Row="5" Grid.Column="1" Height="26" Width="202" Margin="0,0,5,0" HorizontalAlignment="Left">
+                                <ComboBox Height="24" Width="200" HorizontalAlignment="Left" Name="ddlSpielAuswaertsMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Label Name="ddlSpielAuswaertsMannschaften" Content="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Border>
+                            <Button x:Name="btnAddSpiel" Grid.Row="6" Grid.Column="1" Height="24" Margin="0,5,5,5" Click="BtnAddSpiel_Click" >Spiel hinzufügen</Button>
+                            <Label Content="requierd *" Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" FontStyle="Italic" Foreground="Gray" Margin="-10,0,0,0"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Spielplan" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -361,10 +358,51 @@
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
-                            <DataGrid x:Name="dgSpielplan" Grid.Row="0" Grid.Column="0" Width="500" Height="300" AutoGenerateColumns="True"/>
-                            <Button x:Name="btnRefreshSpielplan" Grid.Row="1" Grid.Column="0" Click="btnRefreshSpielplan_Click">Neu laden</Button>
+                            <DataGrid x:Name="dgSpielplan" Grid.Row="0" Grid.Column="0" Width="490" Height="385" Margin="5,5,5,0" AutoGenerateColumns="True" CanUserSortColumns="True"/>
+                            <Button x:Name="btnRefreshSpielplan" Grid.Row="1" Grid.Column="0" Margin="5,0,5,5" Click="btnRefreshSpielplan_Click">Neu laden</Button>
                         </Grid>
                     </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Filter Spiele">
+                <Grid HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Filter Tore">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Label Content="Tore zwischen Minute " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Height="24" Width="40" HorizontalAlignment="Left" Name="ddlToreFilternMinuteVon" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True" PreviewTextInput="ddlSpielFilternMinuteVon_PreviewTextInput" SelectionChanged="ddlSpielFilternMinuteVon_SelectionChanged"/>
+                            <Label Content="und Minute " Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Margin="0,5,0,5"/>
+                            <ComboBox Grid.Row="0" Grid.Column="3" Height="24" Width="40" HorizontalAlignment="Left" Name="ddlToreFilternMinuteBis" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True" Margin="0,0,5,0" PreviewTextInput="ddlSpielFilternMinuteBis_PreviewTextInput" SelectionChanged="ddlSpielFilternMinuteBis_SelectionChanged"/>
+                            <Label Content="Tortyp " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Width="155" Height="24" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlToreFilterTortyp" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True" SelectionChanged="ddlErgebnisTorTyp_SelectionChanged">
+                                <ComboBoxItem>Normales Tor</ComboBoxItem>
+                                <ComboBoxItem>Eigentor</ComboBoxItem>
+                                <ComboBoxItem>Elfmeter</ComboBoxItem>
+                                <ComboBoxItem>Kopfball</ComboBoxItem>
+                            </ComboBox>
+                        </Grid>
+                    </GroupBox>
+                    <DataGrid x:Name="dgTore" Grid.Row="0" Grid.Column="1" Width="490" Height="385" Margin="5,5,5,0" AutoGenerateColumns="True" CanUserSortColumns="True"/>
                 </Grid>
             </TabItem>
         </TabControl>
