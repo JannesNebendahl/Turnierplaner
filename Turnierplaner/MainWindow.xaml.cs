@@ -748,6 +748,14 @@ namespace Turnierplaner
                     sql = "SELECT * " +
                           "FROM SpieltAuf";
                     break;
+                case "Fairnesstabelle":
+                    sql = "SELECT * " +
+                          "FROM Fairnesstabelle";
+                    break;
+                case "Tor":
+                    sql = "SELECT * " +
+                          "FROM Tor";
+                    break;
                 default:
                     return;
             }
@@ -1346,6 +1354,7 @@ namespace Turnierplaner
             Tor torHeim = new Tor();
             torHeim.Mannschaft = ergebnisSpiel.HeimmannschaftsId;
             torHeim.SpielID = ergebnisSpiel.Id;
+            torHeim.Typ = 1;
 
             for (int i = 0; i < Int32.Parse(tbxErgebnisHeim.Text); i++)
             {
@@ -1354,6 +1363,7 @@ namespace Turnierplaner
             Tor torGast = new Tor();
             torGast.Mannschaft = ergebnisSpiel.AuswaertsmannschaftsId;
             torGast.SpielID = ergebnisSpiel.Id;
+            torGast.Typ = 1;
             for (int i = 0; i < Int32.Parse(tbxErgebnisGast.Text); i++)
             {
                 torList.Add(torGast);
@@ -1414,7 +1424,7 @@ namespace Turnierplaner
         #region Filtern
 
         #region Tore
-        string[] sqlFilterTore = new string[3];
+        string[] sqlFilterTore = new string[4];
         
         private void ddlSpielFilternMinuteVon_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -1469,8 +1479,35 @@ namespace Turnierplaner
             }
         }
 
+        private bool getSpielerID()
+        {
+            bool ret = false;
+
+            List<Spieler> spielerlist = new List<Spieler>();
+            spielerlist = AccessSpieler.LoadSpielerNameAlphabetical();
+
+            foreach (Spieler spieler in spielerlist)
+            {
+                if (spieler.Name.Contains(tbxSpieleFilternSpieler.Text))
+                {
+                    sqlFilterTore[3] = " AND Sp.Id == '" + spieler.Id.ToString() + "' ";
+                    ret = true;
+                }
+            }
+            return ret;
+        }
+
         private void btnFilterTore_Click(object sender, RoutedEventArgs e)
         {
+
+            if (!getSpielerID())
+            {
+                dgFilterTore.ItemsSource = null;
+                dgFilterTore.Items.Refresh();
+                return;
+            }
+
+
             string sql = "SELECT  T.Zeitstempel AS 'Minute', " +
                                  "SP.Vorname || ' ' || SP.Nachname AS 'Spieler', " +
                                  "T.Typ, " +
@@ -1685,5 +1722,7 @@ namespace Turnierplaner
         #endregion
 
         #endregion
+
+
     }
 }
