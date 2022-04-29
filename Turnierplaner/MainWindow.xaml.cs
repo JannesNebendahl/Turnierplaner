@@ -129,7 +129,12 @@ namespace Turnierplaner
                 Spieltag st = new Spieltag();
                 st.Check_Status = false;
                 st.Tag = (int)spiel.Spieltag;
-                ddlSpieltag.Add(st);
+                bool contains = ddlSpieltag.Any(s => s.Tag == st.Tag);
+                if (!contains)
+                {
+                    ddlSpieltag.Add(st);
+                }
+                
             }
             BindSpieltag();
         }
