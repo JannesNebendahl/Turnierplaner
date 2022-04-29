@@ -1533,7 +1533,6 @@ namespace Turnierplaner
                            "AND S.AuswaertsmannschaftsId == G.Id ";
 
             foreach (string filter in sqlFilterSpiele)
-            foreach (string filter in sqlFilterTore)
             {
                 if (filter != null)
                 {
