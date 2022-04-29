@@ -793,6 +793,8 @@ namespace Turnierplaner
             DateTime firstSpieltag = (DateTime)dpCreateTrunier1Spieltag.SelectedDate;
             TimeSpan timeBetweenSpieltagen = CalcutlateTimespanBetweenSpieltag(firstSpieltag, dpCreateTrunierLastSpieltag.SelectedDate, teams.Count);
 
+            SqliteDataAccess.deleteTableEntrys();
+
             AddDummyIfNeeded(ref teams, ref dummy);
 
             CreateSpielplan(ref teams, ref spielplan, ref firstSpieltag, ref timeBetweenSpieltagen);

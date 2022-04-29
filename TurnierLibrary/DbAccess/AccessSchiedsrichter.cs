@@ -10,6 +10,7 @@ namespace TurnierLibrary.DbAccess
 {
     public class AccessSchiedsrichter : SqliteDataAccess
     {
+        //TODO: Speichert einen Schiedsrichter ab.
         public static void StoreSchiedsrichter(Schiedsrichter schiedsrichter)
         {
             string sql = "INSERT INTO Schiedsrichter (Vorname, Nachname) " +
@@ -31,6 +32,7 @@ namespace TurnierLibrary.DbAccess
             }
         }
 
+        //TODO: Gibt Schiedsrichter in alphabetischer Reihenfolge aus
         public static List<Schiedsrichter> LoadAlphabetical()
         {
             string sql = "SELECT * " +
