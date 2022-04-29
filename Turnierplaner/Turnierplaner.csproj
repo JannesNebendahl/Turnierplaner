@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="background.png" />
     <None Remove="Logo.ico" />
     <None Remove="TurnierDB.db" />
   </ItemGroup>
@@ -27,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="background.png" />
     <Resource Include="Logo.ico" />
   </ItemGroup>
 
