@@ -692,34 +692,42 @@ namespace Turnierplaner
             switch (selectedItem.Content)
             {
                 case "Mannschaften":
+                    // TODO: Alle Mannschaften in der Datenbank im DataGrid des Tabs Datenbank zeigen
                     sql = "SELECT * " +
                           "FROM Mannschaften";
                     break;
                 case "Positionen":
+                    // TODO: Alle Positionen in der Datenbank im DataGrid des Tabs Datenbank zeigen
                     sql = "SELECT * " +
                           "FROM Positionen";
                     break;
                 case "Schiedsrichter":
+                    // TODO: Alle Schiedsrichter in der Datenbank im DataGrid des Tabs Datenbank zeigen
                     sql = "SELECT * " +
                           "FROM Schiedsrichter";
                     break;
                 case "Spiele":
+                    // TODO: Alle Spiele in der Datenbank im DataGrid des Tabs Datenbank zeigen
                     sql = "SELECT * " +
                           "FROM Spiel";
                     break;
                 case "Spieler":
+                    // TODO: Alle Spieler in der Datenbank im DataGrid des Tabs Datenbank zeigen
                     sql = "SELECT * " +
                           "FROM Spieler";
                     break;
                 case "SpieltAuf":
+                    // TODO: Alle SpieltAuf Relationen in der Datenbank im DataGrid des Tabs Datenbank zeigen
                     sql = "SELECT * " +
                           "FROM SpieltAuf";
                     break;
                 case "Fairnesstabelle":
+                    // TODO: Alle Fairnesstabellen Einträge in der Datenbank im DataGrid des Tabs Datenbank zeigen
                     sql = "SELECT * " +
                           "FROM Fairnesstabelle";
                     break;
                 case "Tor":
+                    // TODO: Alle Tore in der Datenbank im DataGrid des Tabs Datenbank zeigen
                     sql = "SELECT * " +
                           "FROM Tor";
                     break;
@@ -1144,6 +1152,7 @@ namespace Turnierplaner
         #region Spielplan zeigen
         private void btnRefreshSpielplan_Click(object sender, RoutedEventArgs e)
         {
+            // TODO: Lade alle Spieltage im Format "SpieltagNummer, SpieltagDatum, Heimmannschaft, Gastmannschaft, SchiedsrichterName" in ein DataGrid
             string sql = "SELECT S.Spieltag, S.Datum, H.Name AS Heim, A.Name AS Gast, Sc.Vorname || ' ' || Sc.Nachname AS Schiedsrichter " +
                          "FROM Spiel S, Mannschaften H, Mannschaften A, Pfeift P, Schiedsrichter Sc " +
                          "WHERE S.HeimmannschaftsID == H.Id AND S.AuswaertsmannschaftsID == A.Id AND P.SpielId == S.Id AND P.SchiedsrichterId == Sc.Id " +
@@ -1408,6 +1417,7 @@ namespace Turnierplaner
             var comboBox = (ComboBox)e.Source;
             if ((int)comboBox.SelectedValue <= 90 && (int)comboBox.SelectedValue >= 1)
             {
+                // TODO: Filter, der alle Tore unterhalb der ausgewählten Minute filtert
                 sqlFilterTore[1] = " AND T.Zeitstempel <= " + (int)comboBox.SelectedValue;
             }
             else
@@ -1421,6 +1431,7 @@ namespace Turnierplaner
             var comboBox = (ComboBox)e.Source;
             if ((int)comboBox.SelectedValue <= 90 && (int)comboBox.SelectedValue >= 1)
             {
+                // TODO: Filter, der alle Tore oberhalb der ausgewählten Minute filtert
                 sqlFilterTore[0] = " AND T.Zeitstempel >= " + (int)comboBox.SelectedValue;
             }
             else
@@ -1436,6 +1447,7 @@ namespace Turnierplaner
             string text = (string)comboBoxItem.Content;
             if (text.Equals("Normales Tor") || text.Equals("Eigentor") || text.Equals("Elfmeter") || text.Equals("Kopfball"))
             {
+                // TODO: Filter, der alle Tore der ausgewählten Kategorie filtert
                 sqlFilterTore[2] = " AND T.Typ == '" + text + "'";
             }
             else
@@ -1455,6 +1467,7 @@ namespace Turnierplaner
             {
                 if (spieler.Name.Contains(tbxSpieleFilternSpieler.Text))
                 {
+                    // TODO: Filter, der die Tore aller ausgewählten Spieler filtert
                     sqlFilterTore[3] = " AND Sp.Id == '" + spieler.Id.ToString() + "' ";
                     ret = true;
                 }
@@ -1472,7 +1485,7 @@ namespace Turnierplaner
                 return;
             }
 
-
+            // TODO: Alle Tore die auf den eingestellten Filter zutreffen in ein DataGrid laden. Das DataGrid besitzt dabei folgende Spalten: Minuten, Spieler (der das Tor erzielt hat), Spiel (in dem das Tor gefallen ist), Datum (des Spiels)
             string sql = "SELECT  T.Zeitstempel AS 'Minute', " +
                                  "SP.Vorname || ' ' || SP.Nachname AS 'Spieler', " +
                                  "T.Typ, " +
@@ -1484,6 +1497,7 @@ namespace Turnierplaner
                             "AND S.AuswaertsmannschaftsId == G.Id " +
                             "AND T.Spieler == SP.Id ";
 
+            //Filter zur obigem SQL Befehl hinzufügen
             foreach (string filter in sqlFilterTore)
             {
                 if (filter != null)
@@ -1516,6 +1530,7 @@ namespace Turnierplaner
 
         private void btnFilterSpiele_Click(object sender, RoutedEventArgs e)
         {
+            // TODO: Alle Spiele auf der eingestellten Filter zutreffen in ein DataGrid laden. Das DataGrid besitzt dabei folgende Spalten: Spielbegegnung (im Format HeimmanschftsKürzel:GastmannschaftsKürzel), Ergebnis (im Format Heimtore:Gasttore), Datum (des Spiels)
             string sql = "SELECT H.Kuerzel || ':' || G.Kuerzel AS Begegnung," +
                             "sum(CASE  WHEN(T.SpielID == S.Id AND T.Mannschaft == H.Id and T.Typ != 2) THEN 1 when(T.SpielID == S.Id AND T.Mannschaft == G.Id and T.Typ == 2) then 1 else 0 END) || ':' || " +
                             "sum(CASE  WHEN(T.SpielID == S.Id AND T.Mannschaft == G.Id and T.Typ != 2) THEN 1 when(T.SpielID == S.Id AND T.Mannschaft == H.Id and T.Typ == 2) then 1 else 0 END) AS Ergebnis, " +
@@ -1529,6 +1544,7 @@ namespace Turnierplaner
 
             if (tbxSpieleFilternToranzahl.Text != "")
             {
+                // TODO: Filter hinzufügen, der nur Spiele mit einer exakten Toranzahl durchlässt
                 sqlFilterSpiele[2] = " HAVING SUM(T.SpielID == S.Id) == " + tbxSpieleFilternToranzahl.Text;
             }
 
@@ -1543,10 +1559,12 @@ namespace Turnierplaner
             }
             if (sqlTage.Count > 0)
             {
+                // TODO: Filter hinzufügen, der nur Spiele aller ausgewählten Spieltage durchlässt
                 sqlFilterSpiele[0] = "AND ( ";
                 int index = 1;
                 foreach (string s in sqlTage)
                 {
+                    //alle ausgewählten Spieltage im Filter durch disjunktionen verknüpfen
                     sqlFilterSpiele[0] += s;
                     if (index != sqlTage.Count)
                         sqlFilterSpiele[0] += " OR ";
@@ -1561,6 +1579,7 @@ namespace Turnierplaner
             {
                 if (m.Check_Status)
                 {
+                    // TODO: Filter hinzufügen, der nur Spiele aller ausgewählten Mannschaften durchlässt
                     sqlMannschaft.Add(" S.AuswaertsmannschaftsId == " + m.Id + " OR S.HeimmannschaftsId == " + m.Id + " ");
                 }
             }
@@ -1570,6 +1589,7 @@ namespace Turnierplaner
                 int index = 1;
                 foreach (string s in sqlMannschaft)
                 {
+                    //alle ausgewählten Mannschaften im Filter durch disjunktionen verknüpfen
                     sqlFilterSpiele[1] += s;
                     if (index != sqlMannschaft.Count)
                         sqlFilterSpiele[1] += " OR ";
@@ -1613,6 +1633,7 @@ namespace Turnierplaner
         #region Spieler
         private void btnFilterSpieler_Click(object sender, RoutedEventArgs e)
         {
+            // TODO: Alle Spieler die auf den eingestellten Filter zutreffen in ein DataGrid laden. Das DataGrid besitzt dabei folgende Spalten: Name (des Spielers), Vereinsnamen (des Spielers), Positionen (auf denen der Spieler spielen kann)
             string sql = "SELECT SP.Vorname || ' ' || Sp.Nachname AS Name, M.Name AS Mannschaft, GROUP_CONCAT(P.Kuerzel) AS Position " +
                          "FROM Spieler SP, Positionen P, Mannschaften M, SpieltAuf SA " +
                          "WHERE Sp.Id == SA.SpielerId AND M.Id == Sp.MannschaftsId AND P.Id == SA.PositionId ";
@@ -1621,6 +1642,7 @@ namespace Turnierplaner
 
             if (tbxSpielerFilternName.Text != "")
             {
+                // TODO: Filter hinzufügen, der nur Spieler durchlässt in dessen namen der eingegebene Text ein Teil des Namen ist
                 sqlFilterSpieler[2] = " AND SP.Vorname || ' ' || SP.Nachname LIKE '%" + tbxSpielerFilternName.Text + "%' ";
             }
 
@@ -1630,6 +1652,7 @@ namespace Turnierplaner
             {
                 if (m.Check_Status)
                 {
+                    // TODO: Filter hinzufügen, der nur Spieler der ausgewählten Vereine durchlässt
                     sqlMannschaft.Add(" SP.MannschaftsId == " + m.Id);
                 }
             }
@@ -1639,6 +1662,7 @@ namespace Turnierplaner
                 int index = 1;
                 foreach (string s in sqlMannschaft)
                 {
+                    //alle ausgewählten Vereine im Filter durch disjunktionen verknüpfen
                     sqlFilterSpieler[0] += s;
                     if (index != sqlMannschaft.Count)
                         sqlFilterSpieler[0] += " OR ";
@@ -1653,6 +1677,7 @@ namespace Turnierplaner
             {
                 if (p.Check_Status)
                 {
+                    // TODO: Filter hinzufügen, der nur Spieler durchlässt die in 
                     sqlPosition.Add(" SA.PositionId == " + p.Id + " ");
                 }
             }
@@ -1662,6 +1687,7 @@ namespace Turnierplaner
                 int index = 1;
                 foreach (string s in sqlPosition)
                 {
+                    //alle ausgewählten Positionen im Filter durch disjunktionen verknüpfen
                     sqlFilterSpieler[1] += s;
                     if (index != sqlPosition.Count)
                         sqlFilterSpieler[1] += " OR ";
@@ -1748,7 +1774,7 @@ namespace Turnierplaner
                 MessageBox.Show("Error");
             }
         }
-        #endregion
+        #endregion Tore
 
         #region Fairness
         private void loadFairnesstablle()
@@ -1763,7 +1789,7 @@ namespace Turnierplaner
             }
     dgFairnesstablle.ItemsSource = fairnesstablle;
         }
-        #endregion
+        #endregion Fairness
 
         #region Tabelle
         private void loadTabelle()
@@ -1772,10 +1798,10 @@ namespace Turnierplaner
         }
 
 
-        #endregion
+        #endregion Tabelle
 
-        #endregion
+        #endregion Statistiken
 
-        
+
     }
 }
