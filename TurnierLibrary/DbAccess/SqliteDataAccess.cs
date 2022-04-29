@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DemoLibary;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -31,5 +32,18 @@ namespace TurnierLibrary
                 connection.Close();
             }
         }
+
+        public static void deleteTableEntrys()
+        {
+            string sql = @"
+                            DELETE FROM Spiel;
+                            DELETE FROM Tor;
+                            DELETE FROM Pfeift;
+                            DELETE FROM Fairnesstabelle;";
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query(sql);
+            }
+            }
     }
 }

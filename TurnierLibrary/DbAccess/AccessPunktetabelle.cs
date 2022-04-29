@@ -11,10 +11,32 @@ namespace TurnierLibrary.DbAccess
 {
     public class AccessPunktetabelle : SqliteDataAccess
     {
+        //TODO: Ladet die Punktetabelle aus der Datenbank.
         public static List<Punktetabelle> LoadPunktetabelle()
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
+                /*TODO: Äußeres select:
+                        Gibt den Namen der Mannschaft aus un gruppiert diese.
+                        Wird mit absteigender Punktzahl geordnet zurückgegeben.
+                        Gibt in Abhängigkeit von der MannschaftsID die erhaltene Punkte von einem
+                        Spiel zurück. Daraus lässt sich schließen ob ein Spiel gewonnen/verloren/unentschieden war.
+                        Das kann dann einfach über sum und case when herausgelesen werden.
+
+                        Die Punkte können ähnlich summiert werden.
+                        Die Tordifferenz kann über alle Spiele der Manschaft im inneren Select herausgelesen werden.
+                        Eigentore zählen als Tore für den Gegner.
+
+                        Inneres Select:
+                        Berechnet die Toranzahl der Heim- und Auswaertsmannschaft in einem Spiel.
+                        Eigentore werden dem Gegner zugeschrieben.
+                        Die Punkte werden hier nur für die Heimmannschaft berechnet, da vom äußeren Kontext auf
+                        die Punkte für die Auswaertsmannschaft geschlossen werden kann.
+                        Zudem werden die IDs der Heim- und Auswaertsmannschaft gespeichert ( wird für die
+                        äußere select-statement benötigt)
+                    TODO:   ein row_number()  over (ORDER BY Punkte ASC) as Platzierung hat nicht funktioniert.
+                            Dadurch wird diese nun in der App gelöst.
+                */
                 string sql = @"select M.Name,
                             sum(M.Id == Punkterechnung.Heim or M.Id == Punkterechnung.Aus) as Spiele,
                                sum(iif(Punkterechnung.Heim == M.Id and Punkterechnung.Punkte == 3, 1,

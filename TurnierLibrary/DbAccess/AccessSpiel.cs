@@ -11,6 +11,7 @@ namespace TurnierLibrary
 {
     public class AccessSpiel : SqliteDataAccess
     {
+        //TODO: Ladet die Spiele in die App.
         public static List<Spiel> LoadSpiele()
         {
             string sql = "SELECT * " +
@@ -23,6 +24,7 @@ namespace TurnierLibrary
             }
         }
 
+        //TODO: Speichert ein Spiel in die Datenbank und gibt die id zurück.
         public static int? StoreSpiel(Spiel spiel)
         {
             int? id = null;
@@ -50,6 +52,7 @@ namespace TurnierLibrary
             return id;
         }
 
+        //TODO: Gibt die Anzahl der Spiele in der Datenbank zurück
         public static int? CountSpiele()
         {
             int? count = null;
@@ -71,6 +74,7 @@ namespace TurnierLibrary
             return count;
         }
 
+        //TODO: Löscht alle Spiele und gibt die Anzahl der gelöschten Elemente zurück
         public static int? CleanSpiele()
         {
             int? count = null;
@@ -92,6 +96,7 @@ namespace TurnierLibrary
             return count;
         }
 
+        //TODO: Checkt ob eine SpielID bereits vergeben ist und returned entsprechend true/false
         public static bool? IdExist(int Id)
         {
             bool? ret = null;
@@ -123,6 +128,7 @@ namespace TurnierLibrary
             return ret;
         }
 
+        //TODO: Lädt alle Spiele die an einem Tag gespielt werden.
         public static List<Spiel> LoadGamesOfDate(DateTime date)
         {
             string sql = "SELECT s.Id, a.Name as Heim, b.Name as Gast, s.HeimmannschaftsID, s.AuswaertsmannschaftsID " +
