@@ -1444,7 +1444,7 @@ namespace Turnierplaner
             bool ret = false;
 
             List<Spieler> spielerlist = new List<Spieler>();
-            spielerlist = AccessSpieler.LoadSpielerNameAlphabetical();
+            spielerlist = AccessSpieler.LoadSpielerAlphabetical();
 
             foreach (Spieler spieler in spielerlist)
             {
@@ -1459,12 +1459,14 @@ namespace Turnierplaner
 
         private void btnFilterTore_Click(object sender, RoutedEventArgs e)
         {
-
-            if (!getSpielerID())
+            if (tbxSpieleFilternSpieler.Text != "")
             {
-                dgFilterTore.ItemsSource = null;
-                dgFilterTore.Items.Refresh();
-                return;
+                if (!getSpielerID())
+                {
+                    dgFilterTore.ItemsSource = null;
+                    dgFilterTore.Items.Refresh();
+                    return;
+                }
             }
 
 
@@ -1477,7 +1479,7 @@ namespace Turnierplaner
                          "WHERE  T.SpielID == S.Id " +
                             "AND S.HeimmannschaftsId == H.Id " +
                             "AND S.AuswaertsmannschaftsId == G.Id " +
-                            "AND T.Spieler == SP.Id ";
+                            "AND Sp.Id == T.Spieler ";
 
             foreach (string filter in sqlFilterTore)
             {
