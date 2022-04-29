@@ -45,8 +45,7 @@ CREATE TABLE Spiel
     Spieltag                INTEGER NOT NULL,
     Zuschaueranzahl         INTEGER,
     HeimmannschaftsId       INTEGER NOT NULL REFERENCES Mannschaften,
-    AuswaertsmannschaftsId  INTEGER NOT NULL REFERENCES Mannschaften,
-    ErgebnisEingetragen     INTEGER NOT NULL
+    AuswaertsmannschaftsId  INTEGER NOT NULL REFERENCES Mannschaften
 );
 
 CREATE TABLE Trainer
@@ -174,3 +173,55 @@ INSERT INTO Trainer(TrainerID, Vorname, Nachname, Amtsantritt, Mannschaft) VALUE
 INSERT INTO Trainer(TrainerID, Vorname, Nachname, Amtsantritt, Mannschaft) VALUES (3, 'Geardo', 'Seoane', '2022-01-30 00:00:00',3);
 INSERT INTO Trainer(TrainerID, Vorname, Nachname, Amtsantritt, Mannschaft) VALUES (4, 'Domenico', 'Tedesko', '2022-01-30 00:00:00',4);
 INSERT INTO Trainer(TrainerID, Vorname, Nachname, Amtsantritt, Mannschaft) VALUES (5, 'Christian', 'Streich', '2010-02-15 00:00:00',5);
+
+
+--Spiele
+INSERT INTO Spiel VALUES (1, '2022-04-29 00:00:00', 1, 50.000, 1, 4);
+INSERT INTO Spiel VALUES (2, '2022-04-29 00:00:00', 1, 76.000, 2, 5);
+INSERT INTO Spiel VALUES (3, '2022-05-06 00:00:00', 1, 200, 1, 5);
+INSERT INTO Spiel VALUES (4, '2022-05-06 00:00:00', 1, 45.000, 3, 4);
+INSERT INTO Spiel VALUES (5, '2022-04-29 00:00:00', 1, 50.032, 3, 4);
+INSERT INTO Spiel VALUES (6, '2022-05-13 00:00:00', 1, 80.000, 2, 4);
+INSERT INTO Spiel VALUES (7, '2022-05-20 00:00:00', 1, 57.435, 3, 4);
+INSERT INTO Spiel VALUES (8, '2022-04-29 00:00:00', 1, 55.040, 5, 4);
+INSERT INTO Spiel VALUES (9, '2022-05-27 00:00:00', 1, 37.120, 2, 4);
+INSERT INTO Spiel VALUES (10, '2022-05-27 00:00:00', 1, 51.790, 4, 4);
+
+--Pfeift
+INSERT INTO Pfeift VALUES(4, 1);
+INSERT INTO Pfeift VALUES(1, 2);
+INSERT INTO Pfeift VALUES(2, 3);
+INSERT INTO Pfeift VALUES(3, 4);
+INSERT INTO Pfeift VALUES(5, 5);
+INSERT INTO Pfeift VALUES(4, 6);
+INSERT INTO Pfeift VALUES(1, 7);
+INSERT INTO Pfeift VALUES(2, 8);
+INSERT INTO Pfeift VALUES(2, 9);
+INSERT INTO Pfeift VALUES(5, 10);
+
+--Tore
+INSERT INTO Tor VALUES(1, 32, 1, 1, 1, 1);
+INSERT INTO Tor VALUES(11, 2, 1, 1, 3, 1);
+INSERT INTO Tor VALUES(12, 2, 1, 1, 3, 1);
+INSERT INTO Tor VALUES(13, 2, 1, 1, 2, 1);
+INSERT INTO Tor VALUES(3, 65, 1, 1, 2, 1);
+INSERT INTO Tor VALUES(4, 90, 1, 1, 4, 1);
+INSERT INTO Tor VALUES(5, 87, 6, 2, 2, 2);
+INSERT INTO Tor VALUES(6, 45, 10, 3, 2, 2);
+INSERT INTO Tor VALUES(7, 50, 6, 2, 1, 9);
+INSERT INTO Tor VALUES(8, 5, 6, 2, 1, 6);
+INSERT INTO Tor VALUES(9, 10, 3, 1, 1, 7);
+INSERT INTO Tor VALUES(10, 22, 3, 1, 4, 3);
+INSERT INTO Tor VALUES(15, 22, 3, 1, 1, 3);
+
+--Karten
+INSERT INTO Fairnesstabelle VALUES (1, 'Gelbe Karte',1);
+INSERT INTO Fairnesstabelle VALUES (1, 'Gelbe Karte',1);
+INSERT INTO Fairnesstabelle VALUES (20, 'Gelbe Karte',8);
+INSERT INTO Fairnesstabelle VALUES (3, 'Gelbe Karte',1);
+INSERT INTO Fairnesstabelle VALUES (10, 'Gelbe Karte',4);
+INSERT INTO Fairnesstabelle VALUES (10, 'Rote Karte',4);
+INSERT INTO Fairnesstabelle VALUES (20, 'Rote Karte',4);
+INSERT INTO Fairnesstabelle VALUES (19, 'Rote Karte',8);
+INSERT INTO Fairnesstabelle VALUES (19, 'Rote Karte',8);
+INSERT INTO Fairnesstabelle VALUES (19, 'Rote Karte',8);
