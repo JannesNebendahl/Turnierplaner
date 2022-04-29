@@ -10,6 +10,7 @@ namespace TurnierLibrary
 {
     public class AccessSpieler : SqliteDataAccess
     {
+        //TODO: Speichert einen Spieler ab
         public static int? StoreSpieler(Spieler spieler)
         {
             int? id = null;
@@ -36,6 +37,7 @@ namespace TurnierLibrary
             return id;
         }
 
+        //TODO: Gibt alle Spieler in alphabetischer Reihefolge aus
         public static List<Spieler> LoadSpielerAlphabetical()
         {
             string sql = "SELECT * " +
@@ -49,18 +51,7 @@ namespace TurnierLibrary
             }
         }
 
-        public static List<Spieler> LoadSpielerNameAlphabetical()
-        {
-            string sql = "SELECT Vorname, Nachname, ID " +
-                         "FROM Spieler;";
-
-            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-            {
-                var output = cnn.Query<Spieler>(sql, new DynamicParameters());
-                return output.AsList();
-            }
-        }
-
+        //TODO: gibt alle Spieler in einer bestimmten Mannschaft in alphabetischer Reihenfolge des Vornamens aus.
         public static List<Spieler> LoadSpielerAlphabeticalFromMannschaft(int? ID)
         {
             string sql = "SELECT Vorname, Nachname,  Id " +
@@ -75,6 +66,7 @@ namespace TurnierLibrary
             }
         }
 
+        //TODO: Ändert die Mannschaft eines Spielers
         public static void ChangeMannschaft(int spielerId, int newMannschaftsId)
         {
             string sql = "UPDATE Spieler " +
