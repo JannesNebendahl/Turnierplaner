@@ -10,6 +10,7 @@ namespace TurnierLibrary
 {
     public class AccessTor : SqliteDataAccess
     {
+        //TODO: Gibt die SpielId, die Heimmannschaft als Heim und die Gastmannschaft als Gast sortiert nach der Heimmannschaft aus der Tabelle spiel aus
         public static List<Spiel> LoadSpieltag(DateTime date)
         {
             string sql = "SELECT s.Id, a.Name as Heim, b.Name as Gast " +
@@ -24,6 +25,7 @@ namespace TurnierLibrary
             }
         }
 
+        //TODO: Gibt den Vornamen und den Nachnamen sowie die Anzahl an Toren aller Spieler aus. Die Liste soll nach absteigender Toranzahl sortiert werden. Zudem soll eine Nummerierung als Platzierung durch SQLite erfolgen. Da ein Tor nicht zwingend einem Spieler zugeordnet werden muss, müssen die Tore mit SpielerId <null> entfernt werden.
         public static List<Tor> LoadTorschuetzenliste(bool limit, string condition)
         {
             string sql = "SELECT row_number()  over (ORDER BY Toranzahl DESC) as Platzierung, * FROM ( " +
@@ -55,6 +57,7 @@ namespace TurnierLibrary
             }
         }
 
+        //TODO: Gibt die durchschnittlichen Tore pro Spiel aus
         public static List<Tor> LoadavgToreproSpiel()
         {
             string sql = "SELECT avg(Anzahl) as avgSpiel " +
@@ -69,6 +72,7 @@ namespace TurnierLibrary
             }
         }
 
+        //TODO: Speichert ein Tor in der Tabelle Tor ab
         public static void StoreTor(Tor tor)
         {
             string sql = "INSERT INTO Tor (TorID, Zeitstempel, Spieler, Mannschaft, Typ, SpielID) " +
