@@ -445,10 +445,10 @@
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <Label  Content="Heim: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="left" Margin="0,5,0,5"/>
-                            <TextBox x:Name="tbxErgebnisHeim" Grid.Row="1" Grid.Column="0" Height="24" Width="200" Margin="0,5,5,5" IsReadOnly="False"/>
+                            <TextBox x:Name="tbxErgebnisHeim" PreviewTextInput="tbxErgebnis_PreviewTextInput" Grid.Row="1" Grid.Column="0" Height="24" Width="200" Margin="0,5,5,5" IsReadOnly="False"/>
                             <Label x:Name="lblErgebnisDP" Content=" : " Grid.Row="1" Grid.Column="1" HorizontalAlignment="left" Margin="0,5,0,5"/>
-                            <Label  x:Name="lblErgebnisGast" Content="Gast" Grid.Row="0" Grid.Column="3" HorizontalAlignment="left" Margin="0,5,0,5"/>
-                            <TextBox x:Name="tbxErgebnisGast" Grid.Row="1" Grid.Column="3" Height="24" Width="200" Margin="0,5,5,5" IsReadOnly="False"/>
+                            <Label  x:Name="lblErgebnisGast"  Content="Gast" Grid.Row="0" Grid.Column="3" HorizontalAlignment="left" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxErgebnisGast" PreviewTextInput="tbxErgebnis_PreviewTextInput" Grid.Row="1" Grid.Column="3" Height="24" Width="200" Margin="0,5,5,5" IsReadOnly="False"/>
                         </Grid>
                     </GroupBox>
                     <GroupBox Header="Tore / Karten" Grid.Row="2" Grid.Column="0">
@@ -468,7 +468,7 @@
                                     <DataGridTextColumn Header="Zeit" Binding="{Binding Path=Zeitstempel}" />
                                     <DataGridTextColumn Header="Mannschaft" Binding="{Binding Path=MannschaftString}" />
                                     <DataGridTextColumn Header="Spieler" Binding="{Binding Path=SpielerString}" />
-                                    <DataGridTextColumn Header="Tortyp" Binding="{Binding Path=Typ}" />
+                                    <DataGridTextColumn Header="Tortyp" Binding="{Binding Path=TypString}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <Button x:Name="btnClearTore" Grid.Row="2" Grid.Column="0" Width="80" Margin="54,5,59,0" Click="btnClearTore_Click">Liste löschen</Button>

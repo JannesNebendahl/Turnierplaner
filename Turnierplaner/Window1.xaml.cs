@@ -48,7 +48,23 @@ namespace Turnierplaner
                 MainWindow form1 = ((MainWindow)Application.Current.MainWindow);
                 Tor tor = new Tor();
                 tor.Zeitstempel = Int32.Parse(ddlErgebnisZeit.Text);
-                tor.Typ = ddlErgebnisTorTyp.Text;
+                switch (ddlErgebnisTorTyp.Text)
+                {
+                    case "normales Tor":
+                        tor.Typ = 1;
+                        break;
+                    case "Eigentor":
+                        tor.Typ = 2;
+                        break;
+                    case "Elfmeter":
+                        tor.Typ = 3;
+                        break;
+                    case "Kopfballtor":
+                        tor.Typ = 4;
+                        break;
+                    default:
+                        break;
+                }
                 tor.SpielID = spiel.Id;
 
                 foreach (Spieler spieler in spielerList)

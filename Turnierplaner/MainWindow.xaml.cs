@@ -1054,6 +1054,17 @@ namespace Turnierplaner
         List<Fairnesstabelle> listKarten = new List<Fairnesstabelle>();
         Spiel ergebnisSpiel = new Spiel();
 
+        private void tbxErgebnis_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+        private void tbxErgebnis2_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
         private void loadErgebnisSpiele(object sender, MouseButtonEventArgs e)
         {
             dpErgebnisSpieltag.SelectedDate = DateTime.Now;
@@ -1090,7 +1101,24 @@ namespace Turnierplaner
 
         public void addTorToList(List<Tor> torListe)
         {
-                torList = torListe;
+            switch (torListe[torListe.Count - 1].Typ)
+            {
+                case 1:
+                    torListe[torListe.Count - 1].TypString = "normales Tor";
+                    break;
+                case 2:
+                    torListe[torListe.Count - 1].TypString = "Eigentor";
+                    break;
+                case 3:
+                    torListe[torListe.Count - 1].TypString = "Elfmeter";
+                    break;
+                case 4:
+                    torListe[torListe.Count - 1].TypString = "Kopfballtor";
+                    break;
+                default:
+                    break;
+            }
+            torList = torListe;
                 dgTore.ItemsSource = torListe;
                 dgTore.Items.Refresh();
         }
@@ -1408,10 +1436,9 @@ namespace Turnierplaner
         {
 
         }
-        #endregion
 
         #endregion
 
-
+        #endregion
     }
 }

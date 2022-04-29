@@ -34,7 +34,7 @@ namespace TurnierLibrary
             switch (condition)
             {
                 case "Elfmeter":
-                    sql = sql + " AND t.Typ == 'Elfmeter' ";
+                    sql = sql + " AND t.Typ == 3 ";
                     break;
                 default:
                     break;
