@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Turnierplaner"
         mc:Ignorable="d"
-        Title="Karte hinzufügen" Height="140" Width="458">
+        Title="Karte hinzufügen" Height="140" Width="458" Icon="/Logo.ico">
     <Grid HorizontalAlignment="Center">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />

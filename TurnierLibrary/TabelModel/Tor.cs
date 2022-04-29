@@ -18,5 +18,6 @@ namespace TurnierLibrary
         public string? Nachname { get; set; }
         public int? Toranzahl { get; set; }
         public int? Platzierung { get; set; }
+        public double? avgSpiel { get; set; }
     }
 }

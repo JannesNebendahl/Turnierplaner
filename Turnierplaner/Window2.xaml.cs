@@ -57,6 +57,10 @@ namespace Turnierplaner
                 form1.addKarteToList(kartenList);
                 Close();
             }
+            else
+            {
+                MessageBox.Show("Nicht alle Felder ausgefüllt.");
+            }
         }
 
         private void ddlErgebnisMannschaft_Changed(object sender, EventArgs e)
@@ -67,7 +71,13 @@ namespace Turnierplaner
             string test = ddlErgebnisTorMannschaft.Text;
             if (ddlErgebnisTorMannschaft.Text == "Heim")
             {
-                spielerListe = AccessSpieler.LoadSpielerAlphabeticalFromMannschaft(spiel.HeimmannschaftsId);
+                try { 
+                    spielerListe = AccessSpieler.LoadSpielerAlphabeticalFromMannschaft(spiel.HeimmannschaftsId);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Error");
+                }
 
                 foreach (Spieler spieleritem in spielerListe)
                 {
@@ -78,7 +88,13 @@ namespace Turnierplaner
             }
             else if (ddlErgebnisTorMannschaft.Text == "Gast")
             {
-                spielerListe = AccessSpieler.LoadSpielerAlphabeticalFromMannschaft(spiel.AuswaertsmannschaftsId);
+                try { 
+                    spielerListe = AccessSpieler.LoadSpielerAlphabeticalFromMannschaft(spiel.AuswaertsmannschaftsId);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Error");
+                }
                 foreach (Spieler spieleritem in spielerListe)
                 {
                     ddlErgebnisTorSpieler.Items.Add(spieleritem.Name);

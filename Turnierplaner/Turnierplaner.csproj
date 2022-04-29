@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Logo.ico" />
     <None Remove="TurnierDB.db" />
   </ItemGroup>
 
@@ -23,6 +24,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TurnierLibrary\TurnierLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Logo.ico" />
   </ItemGroup>
 
 </Project>
