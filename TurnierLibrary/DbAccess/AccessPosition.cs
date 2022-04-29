@@ -9,6 +9,8 @@ namespace TurnierLibrary.DbAccess
 {
     public class AccessPosition : SqliteDataAccess
     {
+
+        //TODO: Gibt alles aus der Tabelle Positionen aus
         public static List<Position> LoadPositionen()
         {
             string sql = "SELECT * " +
