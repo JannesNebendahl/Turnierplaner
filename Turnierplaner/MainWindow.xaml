@@ -256,6 +256,8 @@
                                 <ComboBoxItem Content="Spiele" />
                                 <ComboBoxItem Content="Spieler" />
                                 <ComboBoxItem Content="SpieltAuf" />
+                                <ComboBoxItem Content="Fairnesstabelle" />
+                                <ComboBoxItem Content="Tor" />
                             </ComboBox>
                             <DataGrid x:Name="dgZeigenTabelle" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="600" Height="300" CanUserAddRows="False" AutoGenerateColumns="True"/>
                         </Grid>
@@ -388,12 +390,15 @@
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <Label Content="Tore zwischen Minute " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <ComboBox Grid.Row="0" Grid.Column="1" Height="24" Width="40" HorizontalAlignment="Left" Name="ddlToreFilternMinuteVon" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True" PreviewTextInput="ddlSpielFilternMinuteVon_PreviewTextInput" SelectionChanged="ddlSpielFilternMinuteVon_SelectionChanged"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Height="24" Width="40" HorizontalAlignment="Left" Name="ddlToreFilternMinuteVon" IsEditable="false" StaysOpenOnEdit="True" IsTextSearchEnabled="True" PreviewTextInput="ddlSpielFilternMinuteVon_PreviewTextInput" SelectionChanged="ddlSpielFilternMinuteVon_SelectionChanged"/>
                             <Label Content="und Minute " Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Margin="0,5,0,5"/>
-                            <ComboBox Grid.Row="0" Grid.Column="3" Height="24" Width="40" HorizontalAlignment="Left" Name="ddlToreFilternMinuteBis" IsEditable="True" StaysOpenOnEdit="True" IsTextSearchEnabled="True" Margin="0,0,5,0" PreviewTextInput="ddlSpielFilternMinuteBis_PreviewTextInput" SelectionChanged="ddlSpielFilternMinuteBis_SelectionChanged"/>
+                            <ComboBox Grid.Row="0" Grid.Column="3" Height="24" Width="40" HorizontalAlignment="Left" Name="ddlToreFilternMinuteBis" IsEditable="false" StaysOpenOnEdit="True" IsTextSearchEnabled="True" Margin="0,0,5,0" PreviewTextInput="ddlSpielFilternMinuteBis_PreviewTextInput" SelectionChanged="ddlSpielFilternMinuteBis_SelectionChanged"/>
                             <Label Content="Tortyp: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <Label Content="Spieler: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
+                            <TextBox x:Name="tbxSpieleFilternSpieler" Grid.ColumnSpan="3" Grid.Row="2" Grid.Column="1" Height="24" Width="150" Margin="0,5,5,5"/>
                             <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Width="155" Height="24" Margin="0,0,5,0" HorizontalAlignment="Left" Name="ddlToreFilterTortyp" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True" SelectionChanged="ddlErgebnisTorTyp_SelectionChanged">
                                 <ComboBoxItem>Alle</ComboBoxItem>
                                 <ComboBoxItem>Normales Tor</ComboBoxItem>
@@ -418,9 +423,9 @@
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
                             <Label Content="Toranzahl: " Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <TextBox x:Name="tbxSpieleFilternToranzahl" Grid.Row="0" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" PreviewTextInput="tbxSpieleFilternToranzahl_PreviewTextInput" TextChanged="tbxSpieleFilternToranzahl_TextChanged"/>
+                            <TextBox x:Name="tbxSpieleFilternToranzahl" Grid.Row="0" Grid.Column="1" Height="24" Width="200" Margin="0,5,5,5" PreviewTextInput="tbxSpieleFilternToranzahl_PreviewTextInput"/>
                             <Label Content="Spieltag: " Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <ComboBox Grid.Row="1" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="cbSpieleFilternSpieltag" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True" SelectionChanged="cbSpieleFilternSpieltag_SelectionChanged">
+                            <ComboBox Grid.Row="1" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="cbSpieleFilternSpieltag" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <CheckBox Name="chkSpieleFilternSpieltag" Content="{Binding Name}" IsChecked="{Binding Check_Status}" CommandParameter="{Binding Tag}"/>
@@ -428,7 +433,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <Label Content="Mannschaften: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,0,5"/>
-                            <ComboBox Grid.Row="2" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="cbSpieleFilternMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True" SelectionChanged="cbSpieleFilternMannschaften_SelectionChanged" >
+                            <ComboBox Grid.Row="2" Grid.Column="1" Height="24" Width="200" Margin="0,0,5,0" HorizontalAlignment="Left" Name="cbSpieleFilternMannschaften" IsEditable="True" StaysOpenOnEdit="True" IsReadOnly="True">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <CheckBox Name="chkSpieleFilternMannschaften" Content="{Binding Name}" IsChecked="{Binding Check_Status}" CommandParameter="{Binding Id}"/>

@@ -706,6 +706,14 @@ namespace Turnierplaner
                     sql = "SELECT * " +
                           "FROM SpieltAuf";
                     break;
+                case "Fairnesstabelle":
+                    sql = "SELECT * " +
+                          "FROM Fairnesstabelle";
+                    break;
+                case "Tor":
+                    sql = "SELECT * " +
+                          "FROM Tor";
+                    break;
                 default:
                     return;
             }
@@ -1303,6 +1311,7 @@ namespace Turnierplaner
             torHeim.Mannschaft = ergebnisSpiel.HeimmannschaftsId;
             torHeim.SpielID = ergebnisSpiel.Id;
             torHeim.Typ = 1;
+
             for (int i = 0; i < Int32.Parse(tbxErgebnisHeim.Text); i++)
             {
                 torList.Add(torHeim);
@@ -1371,8 +1380,8 @@ namespace Turnierplaner
         #region Filtern
 
         #region Tore
-        string[] sqlFilterTore = new string[3];
-
+        string[] sqlFilterTore = new string[4];
+        
         private void ddlSpielFilternMinuteVon_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
@@ -1426,8 +1435,35 @@ namespace Turnierplaner
             }
         }
 
+        private bool getSpielerID()
+        {
+            bool ret = false;
+
+            List<Spieler> spielerlist = new List<Spieler>();
+            spielerlist = AccessSpieler.LoadSpielerNameAlphabetical();
+
+            foreach (Spieler spieler in spielerlist)
+            {
+                if (spieler.Name.Contains(tbxSpieleFilternSpieler.Text))
+                {
+                    sqlFilterTore[3] = " AND Sp.Id == '" + spieler.Id.ToString() + "' ";
+                    ret = true;
+                }
+            }
+            return ret;
+        }
+
         private void btnFilterTore_Click(object sender, RoutedEventArgs e)
         {
+
+            if (!getSpielerID())
+            {
+                dgFilterTore.ItemsSource = null;
+                dgFilterTore.Items.Refresh();
+                return;
+            }
+
+
             string sql = "SELECT  T.Zeitstempel AS 'Minute', " +
                                  "SP.Vorname || ' ' || SP.Nachname AS 'Spieler', " +
                                  "T.Typ, " +
@@ -1463,28 +1499,33 @@ namespace Turnierplaner
 
         #region Spiele
 
-        string[] sqlFilterSpiele = new string[3];
-
         private void tbxSpieleFilternToranzahl_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]");
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private void tbxSpieleFilternToranzahl_TextChanged(object sender, TextChangedEventArgs e)
+        private void btnFilterSpiele_Click(object sender, RoutedEventArgs e)
         {
+            string sql = "SELECT H.Kuerzel || ':' || G.Kuerzel AS Begegnung," +
+                            "sum(CASE  WHEN(T.SpielID == S.Id AND T.Mannschaft == H.Id and T.Typ != 2) THEN 1 when(T.SpielID == S.Id AND T.Mannschaft == G.Id and T.Typ == 2) then 1 else 0 END) || ':' || " +
+                            "sum(CASE  WHEN(T.SpielID == S.Id AND T.Mannschaft == G.Id and T.Typ != 2) THEN 1 when(T.SpielID == S.Id AND T.Mannschaft == H.Id and T.Typ == 2) then 1 else 0 END) AS Ergebnis, " +
+                            "S.Datum " +
+                         "FROM Tor T, Spiel S, Mannschaften H, Mannschaften G " +
+                         "WHERE T.SpielID == S.Id " +
+                           "AND S.HeimmannschaftsId == H.Id " +
+                           "AND S.AuswaertsmannschaftsId == G.Id ";
+
+            string[] sqlFilterSpiele = new string[3];
+
             if (tbxSpieleFilternToranzahl.Text != "")
             {
-                sqlFilterSpiele[sqlFilterSpiele.Length-1] = "GROUP BY S.Spieltag " +
-                                     "HAVING SUM(T.SpielID == S.Id) == " + tbxSpieleFilternToranzahl.Text;
+                sqlFilterSpiele[2] = " HAVING SUM(T.SpielID == S.Id) == " + tbxSpieleFilternToranzahl.Text;
             }
-        }
 
-        private void cbSpieleFilternSpieltag_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
             sqlFilterSpiele[0] = "";
             List<string> sqlTage = new List<string>();
-            foreach(Spieltag st in ddlSpieltag)
+            foreach (Spieltag st in ddlSpieltag)
             {
                 if (st.Check_Status)
                 {
@@ -1495,57 +1536,49 @@ namespace Turnierplaner
             {
                 sqlFilterSpiele[0] = "AND ( ";
                 int index = 1;
-                foreach(string s in sqlTage)
+                foreach (string s in sqlTage)
                 {
                     sqlFilterSpiele[0] += s;
-                    if(index != sqlTage.Count)
+                    if (index != sqlTage.Count)
                         sqlFilterSpiele[0] += " OR ";
                     index++;
                 }
                 sqlFilterSpiele[0] += " ) ";
             }
-        }
 
-        private void cbSpieleFilternMannschaften_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
             sqlFilterSpiele[1] = "";
-            List<string> sqlTage = new List<string>();
+            List<string> sqlMannschaft = new List<string>();
             foreach (Mannschaft m in ddlMannschaften)
             {
                 if (m.Check_Status)
                 {
-                    sqlTage.Add(" S.AuswaertsmannschaftsId == " + m.Id + " OR S.HeimmannschaftsId == " + m.Id + " ");
+                    sqlMannschaft.Add(" S.AuswaertsmannschaftsId == " + m.Id + " OR S.HeimmannschaftsId == " + m.Id + " ");
                 }
             }
-            if (sqlTage.Count > 0)
+            if (sqlMannschaft.Count > 0)
             {
-                sqlFilterSpiele[1] = "AND ( ";
+                sqlFilterSpiele[1] = " AND ( ";
                 int index = 1;
-                foreach (string s in sqlTage)
+                foreach (string s in sqlMannschaft)
                 {
                     sqlFilterSpiele[1] += s;
-                    if (index != sqlTage.Count)
+                    if (index != sqlMannschaft.Count)
                         sqlFilterSpiele[1] += " OR ";
                     index++;
                 }
                 sqlFilterSpiele[1] += " ) ";
             }
-        }
-
-        private void btnFilterSpiele_Click(object sender, RoutedEventArgs e)
-        {
-            string sql = "SELECT  H.Kuerzel || ':' || G.Kuerzel AS 'Begegnung', " +
-                                 "IIF((S.ErgebnisEingetragen==1), SUM( CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == H.Id) THEN 1 else 0 END) || ':' || SUM( CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == G.Id) THEN 1 else 0 END), NULL) AS 'Ergebnis', " +
-                                 "S.Spieltag, " +
-                                 "S.Datum " +
-                         "From Spiel S, Mannschaften H, Mannschaften G, Tor T " +
-                         "WHERE S.HeimmannschaftsId == H.Id " +
-                           "AND S.AuswaertsmannschaftsId == G.Id ";
 
             foreach (string filter in sqlFilterSpiele)
             {
                 if (filter != null)
                 {
+                    
+
+                    if(filter == sqlFilterSpiele[2])
+                    {
+                        sql += " GROUP BY S.Id ";
+                    }
                     sql += filter;
                 }
             }
@@ -1642,5 +1675,7 @@ namespace Turnierplaner
         #endregion
 
         #endregion
+
+
     }
 }
