@@ -32,6 +32,7 @@ namespace Turnierplaner
             PopulateSpieler();
             PopulateSchiedsrichter();
             PopulateMinutes();
+            PopulateSpieltag();
         }
 
         #region DataBindings
@@ -41,6 +42,7 @@ namespace Turnierplaner
         List<Schiedsrichter> ddlSchiedsrichter;
         List<int> ddlMinutes;
         List<Spiel> ddlSpiel;
+        List<Spieltag> ddlSpieltag;
 
         private void BindSchiedsrichterDropDown()
         {
@@ -66,6 +68,7 @@ namespace Turnierplaner
             ddlSpielHeimMannschaften.ItemsSource = ddlMannschaften;
             ddlSpielAuswaertsMannschaften.ItemsSource = ddlMannschaften;
             ddlTrainerMannschaft.ItemsSource = ddlMannschaften;
+            cbSpieleFilternMannschaften.ItemsSource = ddlMannschaften;
         }
 
         private void BindMinutesDropDown()
@@ -74,11 +77,34 @@ namespace Turnierplaner
             ddlToreFilternMinuteVon.ItemsSource = ddlMinutes;
         }
 
+        private void BindSpieltag()
+        {
+            cbSpieleFilternSpieltag.ItemsSource = ddlSpieltag;
+        }
+
+        private void PopulateSpieltag()
+        {
+            List<Spiel> spiele = AccessSpiel.LoadSpiele();
+            ddlSpieltag = new List<Spieltag>();
+            foreach(Spiel spiel in spiele)
+            {
+                Spieltag st = new Spieltag();
+                st.Check_Status = false;
+                st.Tag = (int)spiel.Spieltag;
+                ddlSpieltag.Add(st);
+            }
+            BindSpieltag();
+        }
+
         private void PopulateMannschaften()
         {
             try
             {
                 ddlMannschaften = AccessMannschaften.LoadMannschaftenAlphabetical();
+                foreach(Mannschaft mannschaft in ddlMannschaften)
+                {
+                    mannschaft.Check_Status = false;
+                }
             }
             catch (Exception exep)
             {
@@ -664,8 +690,29 @@ namespace Turnierplaner
         #region Spielplan
 
         #region Spielplan erstellen
+
+        private bool missingJederGegenJedenInput()
+        {
+            bool ret = false;
+
+            if (dpCreateTrunier1Spieltag.SelectedDate == null)
+            {
+                dpCreateTrunier1Spieltag.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else
+            {
+                dpCreateTrunier1Spieltag.BorderBrush = colorNormal;
+            }
+
+            return ret;
+        }
+
         private void btnCreateTurnierJederVsJeden_Click(object sender, RoutedEventArgs e)
         {
+            if (missingJederGegenJedenInput())
+                return;
+
             if (KeepExistingTournament())
                 return;
 
@@ -676,11 +723,16 @@ namespace Turnierplaner
                 MessageBox.Show("Es werden mindestens 2 Mannschaften benötigt.");
                 return;
             }
+            if (ddlSchiedsrichter.Count < 1)
+            {
+                MessageBox.Show("Es wird mindestens 1 Schiedsrichter benötigt.");
+                return;
+            }
 
             Mannschaft? dummy = null;
             List<Spiel> spielplan = new List<Spiel>();
-            DateTime? firstSpieltag = dpCreateTrunier1Spieltag.SelectedDate;
-            TimeSpan? timeBetweenSpieltagen = CalcutlateTimespanBetweenSpieltag(firstSpieltag, dpCreateTrunierLastSpieltag.SelectedDate, teams.Count);
+            DateTime firstSpieltag = (DateTime)dpCreateTrunier1Spieltag.SelectedDate;
+            TimeSpan timeBetweenSpieltagen = CalcutlateTimespanBetweenSpieltag(firstSpieltag, dpCreateTrunierLastSpieltag.SelectedDate, teams.Count);
 
             AddDummyIfNeeded(ref teams, ref dummy);
 
@@ -738,18 +790,15 @@ namespace Turnierplaner
             return ret;
         }
 
-        private TimeSpan? CalcutlateTimespanBetweenSpieltag(DateTime? firstDay, DateTime? lastDay, int teamsCount)
+        private TimeSpan CalcutlateTimespanBetweenSpieltag(DateTime firstDay, DateTime? lastDay, int teamsCount)
         {
-            TimeSpan? timeBetweenSpieltagen = null;
-            if (firstDay != null && lastDay != null)
+            TimeSpan timeBetweenSpieltagen;
+            if (lastDay != null)
             {
-                timeBetweenSpieltagen = lastDay - firstDay;
+                timeBetweenSpieltagen = (DateTime)lastDay - firstDay;
                 timeBetweenSpieltagen = timeBetweenSpieltagen / teamsCount;
             }
-            else if (dpCreateTrunier1Spieltag.SelectedDate != null)
-            {
-                timeBetweenSpieltagen = TimeSpan.FromDays(7);
-            }
+            timeBetweenSpieltagen = TimeSpan.FromDays(7);
             return timeBetweenSpieltagen;
         }
 
@@ -783,7 +832,7 @@ namespace Turnierplaner
             }
         }
 
-        private void CreateSpielplan(ref List<Mannschaft> teams, ref List<Spiel> spielplan, ref DateTime? firstSpieltag, ref TimeSpan? timeBetweenSpieltagen)
+        private void CreateSpielplan(ref List<Mannschaft> teams, ref List<Spiel> spielplan, ref DateTime firstSpieltag, ref TimeSpan timeBetweenSpieltagen)
         {
             int[] sideA = new int[teams.Count / 2];
             int[] sideB = new int[teams.Count / 2];
@@ -806,14 +855,14 @@ namespace Turnierplaner
 
             for (int spieltag = 1; spieltag < teams.Count; spieltag++)
             {
-                DateTime? spieltagDate = firstSpieltag + timeBetweenSpieltagen * (spieltag - 1);
+                DateTime spieltagDate = firstSpieltag + timeBetweenSpieltagen * (spieltag - 1);
                 CreateSpieltag(teams.Count, sideA, sideB, ref spielplan, spieltag, spieltagDate);
                 if (teams.Count > 2)
                     ReArrangeSides(teams.Count / 2, ref sideA, ref sideB);
             }
         }
 
-        private void CreateSpieltag(int teamsCount, int[] sideA, int[] sideB, ref List<Spiel> spielplan, int spieltag, DateTime? spieltagDate)
+        private void CreateSpieltag(int teamsCount, int[] sideA, int[] sideB, ref List<Spiel> spielplan, int spieltag, DateTime spieltagDate)
         {
             for (int i = 0; i < (teamsCount / 2); i++)
             {
@@ -821,10 +870,8 @@ namespace Turnierplaner
                 spiel.HeimmannschaftsId = sideA[i];
                 spiel.AuswaertsmannschaftsId = sideB[i];
                 spiel.Spieltag = spieltag;
-                if (spieltagDate != null)
-                {
-                    spiel.Datum = spieltagDate;
-                }
+                spiel.Datum = spieltagDate;
+                spiel.ErgebnisEingetragen = 0;
                 spielplan.Add(spiel);
             }
         }
@@ -856,14 +903,11 @@ namespace Turnierplaner
         private void PushSpielplanToDb(ref List<Spiel> spielplan)
         {
             Schiedsrichter[] schiedsrichtersAnsetzung = new Schiedsrichter[ddlSchiedsrichter.Count];
-            if ((bool)cCreateTurnierSchiedsrichterAnsetzen.IsChecked)
+            int i = 0;
+            foreach (Schiedsrichter schiedsrichter in ddlSchiedsrichter)
             {
-                int i = 0;
-                foreach(Schiedsrichter schiedsrichter in ddlSchiedsrichter)
-                {
-                    schiedsrichtersAnsetzung[i] = schiedsrichter;
-                    i++;
-                }
+                schiedsrichtersAnsetzung[i] = schiedsrichter;
+                i++;
             }
 
             try
@@ -871,7 +915,7 @@ namespace Turnierplaner
                 foreach(Spiel spiel in spielplan)
                 {
                     int? spielId = AccessSpiel.StoreSpiel(spiel);
-                    if ((bool)cCreateTurnierSchiedsrichterAnsetzen.IsChecked && (spielId != null))
+                    if (spielId != null)
                     {
                         AccessPfeift.AddRelation((int)spielId, (int)schiedsrichtersAnsetzung[0].Id);
                         RotateSchiedsrichterAnsetzung(ref schiedsrichtersAnsetzung);
@@ -882,6 +926,7 @@ namespace Turnierplaner
             {
                 MessageBox.Show(exep.Message);
             }
+            PopulateSpieltag();
         }
 
         private void RotateSchiedsrichterAnsetzung(ref Schiedsrichter[] schiris)
@@ -900,6 +945,16 @@ namespace Turnierplaner
         private bool missingOrWrongSpielInput()
         {
             bool ret = false;
+
+            if (dpDatum.SelectedDate == null)
+            {
+                dpDatum.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else
+            {
+                dpDatum.BorderBrush = colorNormal;
+            }
 
             if (String.IsNullOrEmpty(tbxSpieltag.Text) || !int.TryParse(tbxSpieltag.Text, out _))
             {
@@ -923,6 +978,13 @@ namespace Turnierplaner
                     tbxZuschaueranzahl.BorderBrush = colorNormal;
                 }
             }
+
+            if (String.IsNullOrEmpty(cbSpielSchiedsrichter.Text))
+            {
+                bSpielSchiedsrichterBorder.BorderBrush = Brushes.Red;
+                ret = true;
+            }
+            else bSpielSchiedsrichterBorder.BorderBrush = Brushes.Transparent;
 
             if (String.IsNullOrEmpty(ddlSpielHeimMannschaften.Text))
             {
@@ -975,7 +1037,8 @@ namespace Turnierplaner
                 }
             }
 
-            spiel.Datum = dpDatum.SelectedDate;
+            spiel.Datum = (DateTime)dpDatum.SelectedDate;
+            spiel.ErgebnisEingetragen = 0;
 
             if (spiel.HeimmannschaftsId == null)
             {
@@ -1012,6 +1075,7 @@ namespace Turnierplaner
             tbxSpielerTrikotnummer.Text = "";
             ddlSpielHeimMannschaften.Text = "";
             ddlSpielAuswaertsMannschaften.Text = "";
+            PopulateSpieltag();
         }
 
         private void tbxZuschaueranzahl_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -1036,13 +1100,16 @@ namespace Turnierplaner
                          "WHERE S.HeimmannschaftsID == H.Id AND S.AuswaertsmannschaftsID == A.Id AND P.SpielId == S.Id AND P.SchiedsrichterId == Sc.Id " +
                          "ORDER BY S.Spieltag; ";
 
-            SqliteDataAccess.LoadTableInDataGrid(dgSpielplan, sql);
+            try
+            {
+                SqliteDataAccess.LoadTableInDataGrid(dgSpielplan, sql);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
         }
 
-        private void dgSpielplan_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //TODO Change data by changing dataGrid
-        }
 
         #endregion Spielplan zeigen
 
@@ -1202,9 +1269,9 @@ namespace Turnierplaner
 
         #region Filtern
 
+        #region Tore
         string[] sqlFilterTore = new string[3];
         
-
         private void ddlSpielFilternMinuteVon_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
@@ -1228,7 +1295,6 @@ namespace Turnierplaner
             {
                 sqlFilterTore[1] = null;
             }
-            filterTore();
         }
 
         private void ddlSpielFilternMinuteVon_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1242,7 +1308,6 @@ namespace Turnierplaner
             {
                 sqlFilterTore[0] = null;
             }
-            filterTore();
         }
 
         private void ddlErgebnisTorTyp_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1258,25 +1323,24 @@ namespace Turnierplaner
             {
                 sqlFilterTore[2] = null;
             }
-            filterTore();
         }
 
-        private void filterTore()
+        private void btnFilterTore_Click(object sender, RoutedEventArgs e)
         {
             string sql = "SELECT  T.Zeitstempel AS 'Minute', " +
-                         "SP.Vorname || ' ' || SP.Nachname AS 'Spieler', " +
-                         "T.Typ, " +
-                         "H.Kuerzel || ' vs ' || G.Kuerzel AS 'Spiel', " +
-                         "S.Datum AS 'Datum' " +
+                                 "SP.Vorname || ' ' || SP.Nachname AS 'Spieler', " +
+                                 "T.Typ, " +
+                                 "H.Kuerzel || ' vs ' || G.Kuerzel AS 'Spiel', " +
+                                 "S.Datum AS 'Datum' " +
                          "From Tor T, Spiel S, Mannschaften H, Mannschaften G, Spieler SP " +
                          "WHERE  T.SpielID == S.Id " +
                             "AND S.HeimmannschaftsId == H.Id " +
                             "AND S.AuswaertsmannschaftsId == G.Id " +
                             "AND T.Spieler == SP.Id ";
 
-            foreach(string filter in sqlFilterTore)
+            foreach (string filter in sqlFilterTore)
             {
-                if(filter != null)
+                if (filter != null)
                 {
                     sql += filter;
                 }
@@ -1294,7 +1358,113 @@ namespace Turnierplaner
             }
         }
 
+        #endregion Tore
+
+        #region Spiele
+
+        string[] sqlFilterSpiele = new string[3];
+
+        private void tbxSpieleFilternToranzahl_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void tbxSpieleFilternToranzahl_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (tbxSpieleFilternToranzahl.Text != "")
+            {
+                sqlFilterSpiele[sqlFilterSpiele.Length-1] = "GROUP BY S.Spieltag " +
+                                     "HAVING SUM(T.SpielID == S.Id) == " + tbxSpieleFilternToranzahl.Text;
+            }
+        }
+
+        private void cbSpieleFilternSpieltag_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            sqlFilterSpiele[0] = "";
+            List<string> sqlTage = new List<string>();
+            foreach(Spieltag st in ddlSpieltag)
+            {
+                if (st.Check_Status)
+                {
+                    sqlTage.Add("S.Spieltag == " + st.Tag);
+                }
+            }
+            if (sqlTage.Count > 0)
+            {
+                sqlFilterSpiele[0] = "AND ( ";
+                int index = 1;
+                foreach(string s in sqlTage)
+                {
+                    sqlFilterSpiele[0] += s;
+                    if(index != sqlTage.Count)
+                        sqlFilterSpiele[0] += " OR ";
+                    index++;
+                }
+                sqlFilterSpiele[0] += " ) ";
+            }
+        }
+
+        private void cbSpieleFilternMannschaften_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            sqlFilterSpiele[1] = "";
+            List<string> sqlTage = new List<string>();
+            foreach (Mannschaft m in ddlMannschaften)
+            {
+                if (m.Check_Status)
+                {
+                    sqlTage.Add(" S.AuswaertsmannschaftsId == " + m.Id + " OR S.HeimmannschaftsId == " + m.Id + " ");
+                }
+            }
+            if (sqlTage.Count > 0)
+            {
+                sqlFilterSpiele[1] = "AND ( ";
+                int index = 1;
+                foreach (string s in sqlTage)
+                {
+                    sqlFilterSpiele[1] += s;
+                    if (index != sqlTage.Count)
+                        sqlFilterSpiele[1] += " OR ";
+                    index++;
+                }
+                sqlFilterSpiele[1] += " ) ";
+            }
+        }
+
+        private void btnFilterSpiele_Click(object sender, RoutedEventArgs e)
+        {
+            string sql = "SELECT  H.Kuerzel || ':' || G.Kuerzel AS 'Begegnung', " +
+                                 "IIF((S.ErgebnisEingetragen==1), SUM( CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == H.Id) THEN 1 else 0 END) || ':' || SUM( CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == G.Id) THEN 1 else 0 END), NULL) AS 'Ergebnis', " +
+                                 "S.Spieltag, " +
+                                 "S.Datum " +
+                         "From Spiel S, Mannschaften H, Mannschaften G, Tor T " +
+                         "WHERE S.HeimmannschaftsId == H.Id " +
+                           "AND S.AuswaertsmannschaftsId == G.Id ";
+
+            foreach (string filter in sqlFilterSpiele)
+            {
+                if (filter != null)
+                {
+                    sql += filter;
+                }
+            }
+
+            sql += ";";
+
+            try
+            {
+                AccessSpiel.LoadTableInDataGrid(dgFilterTore, sql);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+        }
+
+        #endregion Spiele
+
         #endregion Filtern
 
+        
     }
 }

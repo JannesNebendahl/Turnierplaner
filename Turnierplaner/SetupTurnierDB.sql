@@ -41,11 +41,12 @@ CREATE TABLE SpieltAuf
 CREATE TABLE Spiel
 (
     Id                      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    Datum                   DATE,
+    Datum                   DATE NOT NULL,
     Spieltag                INTEGER NOT NULL,
-    Zuschaueranzahl           INTEGER,
+    Zuschaueranzahl         INTEGER,
     HeimmannschaftsId       INTEGER NOT NULL REFERENCES Mannschaften,
-    AuswaertsmannschaftsId  INTEGER NOT NULL REFERENCES Mannschaften
+    AuswaertsmannschaftsId  INTEGER NOT NULL REFERENCES Mannschaften,
+    ErgebnisEingetragen     INTEGER NOT NULL
 );
 
 CREATE TABLE Trainer
@@ -63,7 +64,7 @@ CREATE TABLE Pfeift
     SpielId INTEGER NOT NULL REFERENCES Spiel
 );
 
-    create table Tor
+CREATE TABLE Tor
 (
     TorID       INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
     Zeitstempel INTEGER,

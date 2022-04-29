@@ -10,6 +10,7 @@ namespace DemoLibary
         public DateTime? Entstehungsjahr { get; set; }
         public int? Kapitan { get; set; }
         public int? Punktestand { get; set; }
+        public Boolean Check_Status { get; set; }
         public override string ToString()
         {
             return Name;
