@@ -1197,6 +1197,23 @@ namespace Turnierplaner
         List<Fairnesstabelle> listKarten = new List<Fairnesstabelle>();
         Spiel ergebnisSpiel = new Spiel();
 
+        private void tbxErgebnis_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+        private void tbxErgebnis2_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void loadErgebnisSpiele(object sender, MouseButtonEventArgs e)
+        {
+            dpErgebnisSpieltag.SelectedDate = DateTime.Now;
+            dpErgebnisSpieltag.Text = DateTime.Now.ToString();
+        }
+
         private void btnAddTor_Click(object sender, RoutedEventArgs e)
         {
             if (ddlErgebnisSpiel.Text != "")
@@ -1208,8 +1225,16 @@ namespace Turnierplaner
 
         private void GetGames(object sender, SelectionChangedEventArgs e)
         {
-            ddlSpiel = AccessSpiel.LoadGamesOfDate(dpErgebnisSpieltag.SelectedDate.Value);
-            ddlErgebnisSpiel.Items.Clear();
+            try
+            {
+                ddlSpiel = AccessSpiel.LoadGamesOfDate(dpErgebnisSpieltag.SelectedDate.Value);
+                if (ddlErgebnisSpiel != null) ddlErgebnisSpiel.Items.Clear();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Error");
+            }
+            
 
             for (int i = 0; i < ddlSpiel.Count; i++)
             {
@@ -1219,9 +1244,26 @@ namespace Turnierplaner
 
         public void addTorToList(List<Tor> torListe)
         {
+            switch (torListe[torListe.Count - 1].Typ)
+            {
+                case 1:
+                    torListe[torListe.Count - 1].TypString = "normales Tor";
+                    break;
+                case 2:
+                    torListe[torListe.Count - 1].TypString = "Eigentor";
+                    break;
+                case 3:
+                    torListe[torListe.Count - 1].TypString = "Elfmeter";
+                    break;
+                case 4:
+                    torListe[torListe.Count - 1].TypString = "Kopfballtor";
+                    break;
+                default:
+                    break;
+            }
             torList = torListe;
-            dgTore.ItemsSource = torListe;
-            dgTore.Items.Refresh();
+                dgTore.ItemsSource = torListe;
+                dgTore.Items.Refresh();
         }
 
         public void addKarteToList(List<Fairnesstabelle> fairnesstabelle)
@@ -1258,7 +1300,6 @@ namespace Turnierplaner
                 dgKarten.Items.Refresh();
                 tbxErgebnisHeim.Text = "";
                 tbxErgebnisGast.Text = "";
-                ddlErgebnisSpiel.Items.Clear();
                 dpErgebnisSpieltag.SelectedDate = DateTime.Now;
                 dpErgebnisSpieltag.Text = DateTime.Now.ToString();
             }
@@ -1292,6 +1333,10 @@ namespace Turnierplaner
                 ddlErgebnisSpiel.Items.Clear();
                 dpErgebnisSpieltag.SelectedDate = DateTime.Now;
                 dpErgebnisSpieltag.Text = DateTime.Now.ToString();
+            }
+            else
+            {
+                MessageBox.Show("Es muss ein Ergebnis eingetragen werden.");
             }
         }
 
@@ -1332,6 +1377,14 @@ namespace Turnierplaner
                     }
                 }
             }
+            torList.Clear();
+            dgTore.ItemsSource = torList;
+            dgTore.Items.Refresh();
+            listKarten.Clear();
+            dgKarten.ItemsSource = listKarten;
+            dgKarten.Items.Refresh();
+            tbxErgebnisHeim.Text = "";
+            tbxErgebnisGast.Text = "";
         }
 
         private void btnAddKarte_Click(object sender, RoutedEventArgs e)
@@ -1555,21 +1608,40 @@ namespace Turnierplaner
         #endregion Spiele
 
         #endregion Filtern
+
         #region Statistiken
         private void loadStatistiken(object sender, MouseButtonEventArgs e)
         {
             loadTorStatistiken();
             loadFairnesstablle();
+            loadTabelle();
         }
 
         #region Tore
         private void loadTorStatistiken()
         {
-            List<Tor> torschuetzenkoenig = new List<Tor>();
-            torschuetzenkoenig = AccessTor.LoadTorschuetzenliste(true, "");
-            if (torschuetzenkoenig.Count != 0)
+            try
             {
-                lbTorschuetzenkoenig.Content = torschuetzenkoenig[0].Vorname + " " + torschuetzenkoenig[0].Nachname + ", Tore: " + torschuetzenkoenig[0].Toranzahl;
+                List<Tor> torschuetzenkoenig = new List<Tor>();
+                torschuetzenkoenig = AccessTor.LoadTorschuetzenliste(true, "");
+                if (torschuetzenkoenig.Count != 0)
+                {
+                    lbTorschuetzenkoenig.Content = torschuetzenkoenig[0].Vorname + " " + torschuetzenkoenig[0].Nachname + ", Tore: " + torschuetzenkoenig[0].Toranzahl;
+
+                    List<Tor> avgToreproSpiel = new List<Tor>();
+                    avgToreproSpiel = AccessTor.LoadavgToreproSpiel();
+                    lblavgToreSpiel.Content = avgToreproSpiel[0].avgSpiel;
+
+                    List<Tor> torschuetzenliste = new List<Tor>();
+                    torschuetzenliste = AccessTor.LoadTorschuetzenliste(false, "");
+                    dgTorschuetzenliste.ItemsSource = torschuetzenliste;
+                    dgTorschuetzenliste.Items.Refresh();
+                }
+                else
+                {
+                    lbTorschuetzenkoenig.Content = "kein Torschütze vorhanden";
+                    lblavgToreSpiel.Content = "noch keine Tore vorhanden.";
+                }
 
                 List<Tor> meisteElfmetertore = new List<Tor>();
                 meisteElfmetertore = AccessTor.LoadTorschuetzenliste(true, "Elfmeter");
@@ -1577,23 +1649,14 @@ namespace Turnierplaner
                 {
                     lbmeisteElfmetertore.Content = meisteElfmetertore[0].Vorname + " " + meisteElfmetertore[0].Nachname + ", Elfmetertore: " + meisteElfmetertore[0].Toranzahl;
                 }
-
-                List<Tor> torschuetzenliste = new List<Tor>();
-                torschuetzenliste = AccessTor.LoadTorschuetzenliste(false, "");
-
-                int platzierung = 1;
-                foreach (Tor item in torschuetzenliste)
+                else
                 {
-                    item.Platzierung = platzierung;
-                    platzierung++;
+                    lbmeisteElfmetertore.Content = "kein Torschütze mit Elfmetertoren vorhanden.";
                 }
-                dgTorschuetzenliste.ItemsSource = torschuetzenliste;
-                dgTorschuetzenliste.Items.Refresh();
             }
-            else
+            catch (Exception)
             {
-                lbTorschuetzenkoenig.Content = "kein Torschütze vorhanden";
-                lbmeisteElfmetertore.Content = "kein Torschütze mit Elfmetertoren vorhanden.";
+                MessageBox.Show("Error");
             }
         }
         #endregion
@@ -1602,9 +1665,25 @@ namespace Turnierplaner
         private void loadFairnesstablle()
         {
             List<Fairnesstabelle> fairnesstablle = new List<Fairnesstabelle>();
-            fairnesstablle = AccessFairnesstabelle.LoadFairnesstabelle();
+            try { 
+                 fairnesstablle = AccessFairnesstabelle.LoadFairnesstabelle();
+                }
+            catch (Exception)
+            {
+                MessageBox.Show("Error");
+            }
+    dgFairnesstablle.ItemsSource = fairnesstablle;
         }
         #endregion
+
+        #region Tabelle
+        private void loadTabelle()
+        {
+
+        }
+
+        #endregion
+
         #endregion
     }
 }

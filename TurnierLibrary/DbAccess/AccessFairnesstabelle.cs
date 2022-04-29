@@ -34,8 +34,14 @@ namespace TurnierLibrary
 
         public static List<Fairnesstabelle> LoadFairnesstabelle()
         {
-            string sql = "SELECT * " +
-                         "From Fairnesstabelle;";
+            string sql = "SELECT row_number()  over (ORDER BY Punkte DESC) as Platzierung, * " +
+                         "FROM ( " +
+                         "SELECT Mannschaft, Gelb, Rot, Gelb + Rot * 3 as Punkte " +
+                         "FROM ( " +
+                         "SELECT M.Name AS Mannschaft, " +
+                         "sum(F.Karte == 'Gelbe Karte' AND F.SpielerId == S.Id AND S.MannschaftsId == M.Id) AS Gelb, sum(F.Karte == 'Rote Karte' AND F.SpielerId == S.Id AND S.MannschaftsId == M.Id)  AS Rot " +
+                         "FROM Fairnesstabelle F, Spieler S, Mannschaften M " +
+                         "GROUP BY m.Name))";
 
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
             {
