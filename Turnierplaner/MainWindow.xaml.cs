@@ -32,6 +32,7 @@ namespace Turnierplaner
             PopulateSpieler();
             PopulateSchiedsrichter();
             PopulateMinutes();
+            BindPunktetabelle();
             PopulateSpieltag();
         }
 
@@ -44,6 +45,81 @@ namespace Turnierplaner
         List<Spiel> ddlSpiel;
         List<Spieltag> ddlSpieltag;
 
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
+
+            switch (tabItem)
+            {
+                case "Punktetabelle":
+                    BindPunktetabelle();
+                    break;
+                case "Spielplan":
+                    string sql = "SELECT S.Spieltag, S.Datum, H.Name AS Heim, A.Name AS Gast, Sc.Vorname || ' ' || Sc.Nachname AS Schiedsrichter " +
+                         "FROM Spiel S, Mannschaften H, Mannschaften A, Pfeift P, Schiedsrichter Sc " +
+                         "WHERE S.HeimmannschaftsID == H.Id AND S.AuswaertsmannschaftsID == A.Id AND P.SpielId == S.Id AND P.SchiedsrichterId == Sc.Id " +
+                         "ORDER BY S.Spieltag; ";
+
+                    SqliteDataAccess.LoadTableInDataGrid(dgSpielplan, sql);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        private void BindPunktetabelle()
+        {
+            string sql = @"select M.Name,
+                sum(M.Id == Punkterechnung.Heim or M.Id == Punkterechnung.Aus) as Spiele,
+                   sum(iif(Punkterechnung.Heim == M.Id and Punkterechnung.Punkte == 3, 1,
+                       iif(Punkterechnung.Aus == M.Id and Punkterechnung.Punkte == 0, 1, 0))
+                       ) as Siege,
+                   sum(iif(Punkterechnung.Heim == M.Id and Punkterechnung.Punkte == 0, 1,
+                       iif(Punkterechnung.Aus == M.Id and Punkterechnung.Punkte == 3, 1, 0))
+                       ) as Niederlagen,
+                   sum(iif(Punkterechnung.Heim == M.Id and Punkterechnung.Punkte == 1, 1,
+                       iif(Punkterechnung.Aus == M.Id and Punkterechnung.Punkte == 1, 1, 0))
+                       ) as Unentschieden,
+                sum(iif(Punkterechnung.Heim == M.Id , Punkterechnung.Heimtore,
+                       iif(Punkterechnung.Aus == M.Id, Punkterechnung.Austore, 0))
+                       ) || ':' ||
+                    sum(iif(Punkterechnung.Heim == M.Id , Punkterechnung.Austore,
+                       iif(Punkterechnung.Aus == M.Id, Punkterechnung.Heimtore, 0))
+                       )
+                as Tordifferenz,
+                   sum(iif(Punkterechnung.Heim == M.Id, Punkterechnung.Punkte,
+                case when Punkterechnung.Aus == M.Id then
+                        case when Punkterechnung.Punkte == 3 then 0
+                when Punkterechnung.Punkte == 1 then 1
+                else 3
+                end
+                end
+                )) as Punkte
+            from Mannschaften M,(
+            select H.Id as Heim,
+                   sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == H.Id) THEN 1 else 0 END) as Heimtore,
+                    sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == A.Id) THEN 1 else 0 END) as Austore,
+                   A.Id as Aus,
+                   iif(H.Id == S.HeimmannschaftsId,
+                   iif(sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == H.Id) THEN 1 else 0 END) >
+                       sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == A.Id) THEN 1 else 0 END), 3,
+                       iif(sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == H.Id) THEN 1 else 0 END) ==
+                       sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == A.Id) THEN 1 else 0 END), 1, 0
+                       )),
+                       iif(sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == A.Id) THEN 1 else 0 END) >
+                       sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == H.Id) THEN 1 else 0 END), 3,
+                       iif(sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == A.Id) THEN 1 else 0 END) ==
+                       sum(CASE  WHEN (T.SpielID == S.Id AND T.Mannschaft == H.Id) THEN 1 else 0 END), 1, 0
+                       ))) as Punkte
+            from Spiel S, Tor T, Mannschaften H, Mannschaften A
+            where H.Id == S.HeimmannschaftsId and A.Id == S.AuswaertsmannschaftsId
+            group by S.Id) as Punkterechnung
+            group by M.Id
+            order by Punkte desc;
+            ";
+
+            SqliteDataAccess.LoadTableInDataGrid(dgZeigePunktetabele, sql);
+        }
         private void BindSchiedsrichterDropDown()
         {
             cbSpielSchiedsrichter.ItemsSource = ddlSchiedsrichter;
@@ -163,7 +239,7 @@ namespace Turnierplaner
         private void PopulateMinutes()
         {
             ddlMinutes = new List<int>();
-            for(int i=1; i<=90; i++)
+            for (int i = 1; i <= 90; i++)
             {
                 ddlMinutes.Add(i);
             }
@@ -207,12 +283,12 @@ namespace Turnierplaner
             mannschaft.Name = tbxMannschaftenName.Text;
             mannschaft.Kuerzel = tbxMannschaftenKürzel.Text;
 
-            if(dpEntstehungsjahr.SelectedDate != null)
+            if (dpEntstehungsjahr.SelectedDate != null)
                 mannschaft.Entstehungsjahr = dpEntstehungsjahr.DisplayDate;
 
             if (cbMannschaftenKapitan.Text != null)
             {
-                foreach(Spieler spieler in ddlSpieler)
+                foreach (Spieler spieler in ddlSpieler)
                 {
                     if (string.Equals(spieler.Name, cbMannschaftenKapitan.Text))
                     {
@@ -265,15 +341,15 @@ namespace Turnierplaner
 
             spieler.Vorname = tbxSpielerVorname.Text;
             spieler.Nachname = tbxSpielerNachname.Text;
-            if ( ! String.IsNullOrEmpty(tbxSpielerTrikotnummer.Text))
+            if (!String.IsNullOrEmpty(tbxSpielerTrikotnummer.Text))
             {
                 spieler.Trikotnummer = int.Parse(tbxSpielerTrikotnummer.Text);
             }
             if (!String.IsNullOrEmpty(cbSpielerMannschaften.Text))
             {
-                foreach(Mannschaft mannschaft in ddlMannschaften)
+                foreach (Mannschaft mannschaft in ddlMannschaften)
                 {
-                    if(string.Equals(mannschaft.Name, cbSpielerMannschaften.Text))
+                    if (string.Equals(mannschaft.Name, cbSpielerMannschaften.Text))
                     {
                         spieler.MannschaftsId = mannschaft.Id;
                     }
@@ -284,9 +360,9 @@ namespace Turnierplaner
             {
                 spieler.Id = AccessSpieler.StoreSpieler(spieler);
 
-                if(spieler.Id != null)
+                if (spieler.Id != null)
                 {
-                    foreach(Position pos in ddlPosition)
+                    foreach (Position pos in ddlPosition)
                     {
                         if (pos.Check_Status)
                         {
@@ -548,12 +624,12 @@ namespace Turnierplaner
             List<Position> addToSpieltAuf = new List<Position>();
             List<Position> removeFromSpieltAuf = new List<Position>();
 
-            for(int i=0; i<positionsOfPlayer.Count; i++)
+            for (int i = 0; i < positionsOfPlayer.Count; i++)
             {
                 positionsOfPlayer[i].Check_Status = true;
             }
 
-            foreach(Position selPos in selectedPositions)
+            foreach (Position selPos in selectedPositions)
             {
                 if (selPos.Check_Status)
                 {
@@ -571,7 +647,7 @@ namespace Turnierplaner
                 }
             }
 
-            foreach(Position pos in addToSpieltAuf)
+            foreach (Position pos in addToSpieltAuf)
             {
                 try
                 {
@@ -582,7 +658,7 @@ namespace Turnierplaner
                     MessageBox.Show(exep.Message);
                 }
             }
-            foreach(Position pos in removeFromSpieltAuf)
+            foreach (Position pos in removeFromSpieltAuf)
             {
                 try
                 {
@@ -604,7 +680,7 @@ namespace Turnierplaner
             {
                 return;
             }
-                
+
 
             Spieler selectedSpieler = (Spieler)cbChangePositionSpieler.SelectedItem;
             List<Position> positionsOfPlayer = new List<Position>();
@@ -621,11 +697,11 @@ namespace Turnierplaner
             PopulatePosition();
             List<Position> ddlPositionsOfPlayer = ddlPosition;
 
-            foreach(Position pos in positionsOfPlayer)
+            foreach (Position pos in positionsOfPlayer)
             {
-                for(int i=0; i<ddlPositionsOfPlayer.Count; i++)
+                for (int i = 0; i < ddlPositionsOfPlayer.Count; i++)
                 {
-                    if(ddlPositionsOfPlayer[i].Id == pos.Id)
+                    if (ddlPositionsOfPlayer[i].Id == pos.Id)
                     {
                         ddlPositionsOfPlayer[i].Check_Status = true;
                         break;
@@ -753,7 +829,7 @@ namespace Turnierplaner
             try
             {
                 int? countSpiele = AccessSpiel.CountSpiele();
-                if (countSpiele == null) 
+                if (countSpiele == null)
                     throw new Exception("Unexpected behavior: CountSpiele returned null");
 
                 if (countSpiele > 0)
@@ -780,7 +856,7 @@ namespace Turnierplaner
                         }
                     }
                 }
-                   
+
             }
             catch (Exception exep)
             {
@@ -839,9 +915,9 @@ namespace Turnierplaner
 
             int a = 0;
             int b = 0;
-            foreach(Mannschaft mannschaft in teams)
+            foreach (Mannschaft mannschaft in teams)
             {
-                if(a < teams.Count / 2)
+                if (a < teams.Count / 2)
                 {
                     sideA[a] = (int)mannschaft.Id;
                     a++;
@@ -897,7 +973,7 @@ namespace Turnierplaner
                 return;
 
             spielplan.RemoveAll(spiel => spiel.HeimmannschaftsId == dummy.Id || spiel.AuswaertsmannschaftsId == dummy.Id);
-            
+
         }
 
         private void PushSpielplanToDb(ref List<Spiel> spielplan)
@@ -912,7 +988,7 @@ namespace Turnierplaner
 
             try
             {
-                foreach(Spiel spiel in spielplan)
+                foreach (Spiel spiel in spielplan)
                 {
                     int? spielId = AccessSpiel.StoreSpiel(spiel);
                     if (spielId != null)
@@ -932,7 +1008,7 @@ namespace Turnierplaner
         private void RotateSchiedsrichterAnsetzung(ref Schiedsrichter[] schiris)
         {
             Schiedsrichter temp = schiris[0];
-            for(int i=1; i < schiris.Length; i++)
+            for (int i = 1; i < schiris.Length; i++)
             {
                 schiris[i - 1] = schiris[i];
             }
@@ -1058,7 +1134,7 @@ namespace Turnierplaner
                 if (cbSpielSchiedsrichter.SelectedItem != null && spielId != null)
                 {
                     Schiedsrichter schiedsrichter = (Schiedsrichter)cbSpielSchiedsrichter.SelectedItem;
-                    if(schiedsrichter.Id != null)
+                    if (schiedsrichter.Id != null)
                     {
                         AccessPfeift.AddRelation((int)spielId, (int)schiedsrichter.Id);
                     }
@@ -1123,8 +1199,11 @@ namespace Turnierplaner
 
         private void btnAddTor_Click(object sender, RoutedEventArgs e)
         {
-            Window1 window1 = new Window1(ergebnisSpiel, torList);
-            window1.Show();
+            if (ddlErgebnisSpiel.Text != "")
+            {
+                Window1 window1 = new Window1(ergebnisSpiel, torList);
+                window1.Show();
+            }
         }
 
         private void GetGames(object sender, SelectionChangedEventArgs e)
@@ -1154,8 +1233,6 @@ namespace Turnierplaner
 
         private void btnErgebnisSave_Click(object sender, RoutedEventArgs e)
         {
-            addTorToList(torList);
-            //addKarteToList(listKarten);
             if (!String.IsNullOrEmpty(tbxErgebnisHeim.Text) && !String.IsNullOrEmpty(tbxErgebnisGast.Text) && torList.Count != 0)
             {
                 try
@@ -1173,6 +1250,17 @@ namespace Turnierplaner
                 {
 
                 }
+                torList.Clear();
+                dgTore.ItemsSource = torList;
+                dgTore.Items.Refresh();
+                listKarten.Clear();
+                dgKarten.ItemsSource = listKarten;
+                dgKarten.Items.Refresh();
+                tbxErgebnisHeim.Text = "";
+                tbxErgebnisGast.Text = "";
+                ddlErgebnisSpiel.Items.Clear();
+                dpErgebnisSpieltag.SelectedDate = DateTime.Now;
+                dpErgebnisSpieltag.Text = DateTime.Now.ToString();
             }
             else if (!String.IsNullOrEmpty(tbxErgebnisHeim.Text) && !String.IsNullOrEmpty(tbxErgebnisGast.Text))
             {
@@ -1193,18 +1281,18 @@ namespace Turnierplaner
                 {
 
                 }
-            }/*
-            torList.Clear();
-            dgTore.ItemsSource = torList;
-            dgTore.Items.Refresh();
-            listKarten.Clear();
-            dgKarten.ItemsSource = listKarten;
-            dgKarten.Items.Refresh();
-            tbxErgebnisHeim.Text = "";
-            tbxErgebnisGast.Text = "";
-            ddlErgebnisSpiel.Items.Clear();
-            dpErgebnisSpieltag.SelectedDate = DateTime.Now;
-            dpErgebnisSpieltag.Text = DateTime.Now.ToString();*/
+                torList.Clear();
+                dgTore.ItemsSource = torList;
+                dgTore.Items.Refresh();
+                listKarten.Clear();
+                dgKarten.ItemsSource = listKarten;
+                dgKarten.Items.Refresh();
+                tbxErgebnisHeim.Text = "";
+                tbxErgebnisGast.Text = "";
+                ddlErgebnisSpiel.Items.Clear();
+                dpErgebnisSpieltag.SelectedDate = DateTime.Now;
+                dpErgebnisSpieltag.Text = DateTime.Now.ToString();
+            }
         }
 
         private void fillTorList()
@@ -1248,8 +1336,11 @@ namespace Turnierplaner
 
         private void btnAddKarte_Click(object sender, RoutedEventArgs e)
         {
-            Window2 window2 = new Window2(ergebnisSpiel, listKarten);
-            window2.Show();
+            if (ddlErgebnisSpiel.Text != "")
+            {
+                Window2 window2 = new Window2(ergebnisSpiel, listKarten);
+                window2.Show();
+            }
         }
 
         private void btnClearTore_Click(object sender, RoutedEventArgs e)
@@ -1300,7 +1391,7 @@ namespace Turnierplaner
         private void ddlSpielFilternMinuteVon_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var comboBox = (ComboBox)e.Source;
-            if((int)comboBox.SelectedValue <= 90 && (int)comboBox.SelectedValue >= 1)
+            if ((int)comboBox.SelectedValue <= 90 && (int)comboBox.SelectedValue >= 1)
             {
                 sqlFilterTore[0] = " AND T.Zeitstempel >= " + (int)comboBox.SelectedValue;
             }
@@ -1442,6 +1533,7 @@ namespace Turnierplaner
                            "AND S.AuswaertsmannschaftsId == G.Id ";
 
             foreach (string filter in sqlFilterSpiele)
+            foreach (string filter in sqlFilterTore)
             {
                 if (filter != null)
                 {
@@ -1464,7 +1556,56 @@ namespace Turnierplaner
         #endregion Spiele
 
         #endregion Filtern
+        #region Statistiken
+        private void loadStatistiken(object sender, MouseButtonEventArgs e)
+        {
+            loadTorStatistiken();
+            loadFairnesstablle();
+        }
 
-        
+        #region Tore
+        private void loadTorStatistiken()
+        {
+            List<Tor> torschuetzenkoenig = new List<Tor>();
+            torschuetzenkoenig = AccessTor.LoadTorschuetzenliste(true, "");
+            if (torschuetzenkoenig.Count != 0)
+            {
+                lbTorschuetzenkoenig.Content = torschuetzenkoenig[0].Vorname + " " + torschuetzenkoenig[0].Nachname + ", Tore: " + torschuetzenkoenig[0].Toranzahl;
+
+                List<Tor> meisteElfmetertore = new List<Tor>();
+                meisteElfmetertore = AccessTor.LoadTorschuetzenliste(true, "Elfmeter");
+                if (meisteElfmetertore.Count != 0)
+                {
+                    lbmeisteElfmetertore.Content = meisteElfmetertore[0].Vorname + " " + meisteElfmetertore[0].Nachname + ", Elfmetertore: " + meisteElfmetertore[0].Toranzahl;
+                }
+
+                List<Tor> torschuetzenliste = new List<Tor>();
+                torschuetzenliste = AccessTor.LoadTorschuetzenliste(false, "");
+
+                int platzierung = 1;
+                foreach (Tor item in torschuetzenliste)
+                {
+                    item.Platzierung = platzierung;
+                    platzierung++;
+                }
+                dgTorschuetzenliste.ItemsSource = torschuetzenliste;
+                dgTorschuetzenliste.Items.Refresh();
+            }
+            else
+            {
+                lbTorschuetzenkoenig.Content = "kein Torschütze vorhanden";
+                lbmeisteElfmetertore.Content = "kein Torschütze mit Elfmetertoren vorhanden.";
+            }
+        }
+        #endregion
+
+        #region Fairness
+        private void loadFairnesstablle()
+        {
+            List<Fairnesstabelle> fairnesstablle = new List<Fairnesstabelle>();
+            fairnesstablle = AccessFairnesstabelle.LoadFairnesstabelle();
+        }
+        #endregion
+        #endregion
     }
 }
