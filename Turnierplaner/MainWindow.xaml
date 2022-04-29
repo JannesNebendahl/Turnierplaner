@@ -7,7 +7,10 @@
         mc:Ignorable="d"
         Title="Turnierplaner" Height="510" Width="890">
     <Grid>
-        <TabControl>
+        <TabControl SelectionChanged="TabControl_SelectionChanged">
+            <TabItem Header="Punktetabelle">
+                 <DataGrid x:Name="dgZeigePunktetabele" Width="600" Height="400" AutoGenerateColumns="True" CanUserAddRows="False"/>
+            </TabItem>
             <TabItem Header="DB befüllen">
                 <Grid HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
@@ -254,7 +257,7 @@
                                 <ComboBoxItem Content="Spieler" />
                                 <ComboBoxItem Content="SpieltAuf" />
                             </ComboBox>
-                            <DataGrid x:Name="dgZeigenTabelle" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="600" Height="300" AutoGenerateColumns="True"/>
+                            <DataGrid x:Name="dgZeigenTabelle" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="600" Height="300" CanUserAddRows="False" AutoGenerateColumns="True"/>
                         </Grid>
                     </GroupBox>
                 </Grid>
@@ -358,7 +361,7 @@
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
                             </Grid.RowDefinitions>
-                            <DataGrid x:Name="dgSpielplan" Grid.Row="0" Grid.Column="0" Width="490" Height="385" Margin="5,5,5,0" AutoGenerateColumns="True" CanUserSortColumns="True"/>
+                            <DataGrid x:Name="dgSpielplan" Grid.Row="0" Grid.Column="0" Width="490" Height="385" Margin="5,5,5,0" CanUserAddRows="False" AutoGenerateColumns="True" CanUserSortColumns="True"/>
                             <Button x:Name="btnRefreshSpielplan" Grid.Row="1" Grid.Column="0" Margin="5,0,5,5" Click="btnRefreshSpielplan_Click">Neu laden</Button>
                         </Grid>
                     </GroupBox>
