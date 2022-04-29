@@ -10,6 +10,7 @@ namespace TurnierLibrary
 {
     public class AccessMannschaften : SqliteDataAccess
     {
+        //TODO: Gibt alle Mannschaften aus
         public static List<Mannschaft> LoadMannschaften()
         {
             string sql = "SELECT * " +
@@ -22,6 +23,7 @@ namespace TurnierLibrary
             }
         }
 
+        //TODO: Speichert eine Mannschaft ab
         public static void StoreMannschaft(Mannschaft mannschaft)
         {
             string sql = "INSERT INTO Mannschaften (Name, Kuerzel, Entstehungsjahr, Kapitan) " +
@@ -45,6 +47,7 @@ namespace TurnierLibrary
             }
         }
 
+        //TODO: Gibt die Mannschaften in alphabetischer Reihenfolge aus
         public static List<Mannschaft> LoadMannschaftenAlphabetical()
         {
             string sql = "SELECT * " +
@@ -58,6 +61,7 @@ namespace TurnierLibrary
             }
         }
 
+        //TODO: Sucht nach einer Mannschaft mit einer bestimmten ID und gibt diese aus
         public static Mannschaft QueryById(int Id)
         {
             string sql = "SELECT *" +

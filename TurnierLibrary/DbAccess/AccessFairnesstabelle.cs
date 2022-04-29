@@ -9,6 +9,7 @@ namespace TurnierLibrary
 {
     public class AccessFairnesstabelle : SqliteDataAccess
     {
+        //TODO: Speichert eine Karte ab
         public static int? StoreKarte(Fairnesstabelle fairnesstabelle)
         {
             int? id = null;
@@ -32,9 +33,10 @@ namespace TurnierLibrary
             return id;
         }
 
+        //TODO: Gibt die Fairnestablle aus. Diese ist numeriert und sortiert nach der Anzahl an Punkten
         public static List<Fairnesstabelle> LoadFairnesstabelle()
         {
-            string sql = "SELECT row_number()  over (ORDER BY Punkte DESC) as Platzierung, * " +
+            string sql = "SELECT row_number()  over (ORDER BY Punkte ASC) as Platzierung, * " +
                          "FROM ( " +
                          "SELECT Mannschaft, Gelb, Rot, Gelb + Rot * 3 as Punkte " +
                          "FROM ( " +

@@ -11,6 +11,7 @@ namespace TurnierLibrary.DbAccess
 {
     public class AccessTrainer : SqliteDataAccess
     {
+        //TODO: Gebe alle Elemente aus Trainer aus
         public static List<Trainer> LoadTrainer()
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -20,6 +21,7 @@ namespace TurnierLibrary.DbAccess
             }
         }
 
+        //TODO: Speichere einen Trainer in Trainer
         public static void StoreTrainer(Trainer trainer)
         {
             string sql = "INSERT INTO Trainer(Vorname, Nachname, Amtsantritt, Mannschaft) " +

@@ -11,6 +11,7 @@ namespace TurnierLibrary.DbAccess
 {
     public class AccessPfeift : SqliteDataAccess
     {
+        //TODO: Speichert einen Schiedsrichter sowie das Spiel, welches er pfeift ab.
         public static void AddRelation(int spielId, int schiedsrichterId)
         {
             string sql = "INSERT INTO Pfeift(SchiedsrichterId, SpielId)" +
@@ -32,6 +33,7 @@ namespace TurnierLibrary.DbAccess
             }
         }
 
+        //TODO: Löscht alle Einträge in der Tabelle Pfeift
         public static int? CleanPfeift()
         {
             int? count = null;
