@@ -78,6 +78,7 @@ namespace Turnierplaner
             }
             dgZeigePunktetabele.ItemsSource = punktetabelle;
         }
+
         private void BindSchiedsrichterDropDown()
         {
             cbSpielSchiedsrichter.ItemsSource = ddlSchiedsrichter;
@@ -93,6 +94,7 @@ namespace Turnierplaner
         private void BindPositionDropDown()
         {
             cbSpielerPosition.ItemsSource = ddlPosition;
+            cbFilterSpielerPosition.ItemsSource = ddlPosition;
         }
 
         private void BindMannschaftenDropDown()
@@ -103,6 +105,8 @@ namespace Turnierplaner
             ddlSpielAuswaertsMannschaften.ItemsSource = ddlMannschaften;
             ddlTrainerMannschaft.ItemsSource = ddlMannschaften;
             cbSpieleFilternMannschaften.ItemsSource = ddlMannschaften;
+            cbSpieleFilternMannschaften.ItemsSource = ddlMannschaften;
+            cbSpielerFilternMannschaften.ItemsSource = ddlMannschaften;
         }
 
         private void BindMinutesDropDown()
@@ -125,7 +129,12 @@ namespace Turnierplaner
                 Spieltag st = new Spieltag();
                 st.Check_Status = false;
                 st.Tag = (int)spiel.Spieltag;
-                ddlSpieltag.Add(st);
+                bool contains = ddlSpieltag.Any(s => s.Tag == st.Tag);
+                if (!contains)
+                {
+                    ddlSpieltag.Add(st);
+                }
+                
             }
             BindSpieltag();
         }
@@ -1593,9 +1602,99 @@ namespace Turnierplaner
             {
                 MessageBox.Show(exep.Message);
             }
+
+            PopulateMannschaften();
+            PopulateSpieltag();
+            tbxSpieleFilternToranzahl.Text = "";
         }
 
         #endregion Spiele
+
+        #region Spieler
+        private void btnFilterSpieler_Click(object sender, RoutedEventArgs e)
+        {
+            string sql = "SELECT SP.Vorname || ' ' || Sp.Nachname AS Name, M.Name AS Mannschaft, GROUP_CONCAT(P.Kuerzel) AS Position " +
+                         "FROM Spieler SP, Positionen P, Mannschaften M, SpieltAuf SA " +
+                         "WHERE Sp.Id == SA.SpielerId AND M.Id == Sp.MannschaftsId AND P.Id == SA.PositionId ";
+
+            string[] sqlFilterSpieler = new string[3];
+
+            if (tbxSpielerFilternName.Text != "")
+            {
+                sqlFilterSpieler[2] = " AND SP.Vorname || ' ' || SP.Nachname LIKE '%" + tbxSpielerFilternName.Text + "%' ";
+            }
+
+            sqlFilterSpieler[0] = "";
+            List<string> sqlMannschaft = new List<string>();
+            foreach (Mannschaft m in ddlMannschaften)
+            {
+                if (m.Check_Status)
+                {
+                    sqlMannschaft.Add(" SP.MannschaftsId == " + m.Id);
+                }
+            }
+            if (sqlMannschaft.Count > 0)
+            {
+                sqlFilterSpieler[0] = "AND ( ";
+                int index = 1;
+                foreach (string s in sqlMannschaft)
+                {
+                    sqlFilterSpieler[0] += s;
+                    if (index != sqlMannschaft.Count)
+                        sqlFilterSpieler[0] += " OR ";
+                    index++;
+                }
+                sqlFilterSpieler[0] += " ) ";
+            }
+
+            sqlFilterSpieler[1] = "";
+            List<string> sqlPosition = new List<string>();
+            foreach (Position p in ddlPosition)
+            {
+                if (p.Check_Status)
+                {
+                    sqlPosition.Add(" SA.PositionId == " + p.Id + " ");
+                }
+            }
+            if (sqlPosition.Count > 0)
+            {
+                sqlFilterSpieler[1] = " AND ( ";
+                int index = 1;
+                foreach (string s in sqlPosition)
+                {
+                    sqlFilterSpieler[1] += s;
+                    if (index != sqlPosition.Count)
+                        sqlFilterSpieler[1] += " OR ";
+                    index++;
+                }
+                sqlFilterSpieler[1] += " ) ";
+            }
+
+            foreach (string filter in sqlFilterSpieler)
+            {
+                if (filter != null)
+                {
+                    sql += filter;
+                }
+            }
+
+            sql += " GROUP BY SP.Id;";
+
+            try
+            {
+                AccessSpiel.LoadTableInDataGrid(dgFilterTore, sql);
+            }
+            catch (Exception exep)
+            {
+                MessageBox.Show(exep.Message);
+            }
+
+            PopulatePosition();
+            PopulateMannschaften();
+            tbxSpielerFilternName.Text = "";
+        }
+
+        #endregion Spieler
 
         #endregion Filtern
 
@@ -1672,10 +1771,11 @@ namespace Turnierplaner
 
         }
 
-        #endregion
 
         #endregion
 
+        #endregion
 
+        
     }
 }
