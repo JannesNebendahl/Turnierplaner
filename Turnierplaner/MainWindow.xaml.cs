@@ -134,7 +134,7 @@ namespace Turnierplaner
                 {
                     ddlSpieltag.Add(st);
                 }
-                
+
             }
             BindSpieltag();
         }
@@ -1350,7 +1350,8 @@ namespace Turnierplaner
         {
             if (ddlErgebnisSpiel.SelectedValue != null)
             {
-                ergebnisSpiel.Id = Int32.Parse(ddlErgebnisSpiel.SelectedValue.ToString().Substring(1, 1));
+                string spielID = Regex.Match(ddlErgebnisSpiel.SelectedValue.ToString(), @"\d+").Value;
+                ergebnisSpiel.Id = Int32.Parse(spielID);
 
                 foreach (Spiel spiel in ddlSpiel)
                 {
@@ -1401,7 +1402,7 @@ namespace Turnierplaner
 
         #region Tore
         string[] sqlFilterTore = new string[4];
-        
+
         private void ddlSpielFilternMinuteVon_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
@@ -1700,7 +1701,7 @@ namespace Turnierplaner
             {
                 if (p.Check_Status)
                 {
-                    // TODO: Filter hinzufügen, der nur Spieler durchlässt die in 
+                    // TODO: Filter hinzufügen, der nur Spieler durchlässt die in
                     sqlPosition.Add(" SA.PositionId == " + p.Id + " ");
                 }
             }

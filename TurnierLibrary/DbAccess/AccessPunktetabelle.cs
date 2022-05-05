@@ -94,8 +94,24 @@ namespace TurnierLibrary.DbAccess
                         group by S.Id) as Punkterechnung
                         group by M.Id
                         order by Punkte desc;";
-                var output = cnn.Query<Punktetabelle>(sql, new DynamicParameters());
-                return output.AsList();
+                var output = cnn.Query<Punktetabelle>(sql, new DynamicParameters()).AsList();
+                if (output.Count == 0)
+                {
+                    sql = @"select M.Name,
+                               0 as Siege,
+                               0 as Niederlagen,
+                               sum(M.Id == S.HeimmannschaftsId or M.Id == S.AuswaertsmannschaftsId) as Unentschieden,
+                            0 || ':' ||
+                                0
+                            as Tordifferenz,
+                    sum(M.Id == S.HeimmannschaftsId or M.Id == S.AuswaertsmannschaftsId) as Punkte
+                        from Mannschaften M, Spiel S
+                        group by M.Id
+                        order by Punkte desc;";
+                    output = cnn.Query<Punktetabelle>(sql, new DynamicParameters()).AsList();
+
+                }
+                return output;
             }
         }
     }

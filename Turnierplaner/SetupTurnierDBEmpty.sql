@@ -5,8 +5,7 @@ CREATE TABLE Mannschaften
     Name            TEXT    NOT NULL UNIQUE,
     Kuerzel         TEXT    NOT NULL UNIQUE,
     Entstehungsjahr DATE,
-    Kapitan         INTEGER,
-    Punktestand     INTEGER
+    Kapitan         INTEGER
 );
 
 CREATE TABLE Positionen
