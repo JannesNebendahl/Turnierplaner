@@ -1447,10 +1447,30 @@ namespace Turnierplaner
             var comboBox = (ComboBox)e.Source;
             var comboBoxItem = (ComboBoxItem)comboBox.SelectedItem;
             string text = (string)comboBoxItem.Content;
+            short typ = 1;
+
             if (text.Equals("Normales Tor") || text.Equals("Eigentor") || text.Equals("Elfmeter") || text.Equals("Kopfball"))
             {
+                switch (text)
+                {
+                    case "Normales Tor":
+                        typ = 1;
+                        break;
+                    case "Eigentor":
+                        typ = 2;
+                        break;
+                    case "Elfmeter":
+                        typ = 3;
+                        break;
+                    case "Kopfball":
+                        typ = 4;
+                        break;
+                    default:
+                        typ = 1;
+                        break;
+                }
                 // TODO: Filter, der alle Tore der ausgewählten Kategorie filtert
-                sqlFilterTore[2] = " AND T.Typ == '" + text + "'";
+                sqlFilterTore[2] = " AND T.Typ == '" + typ + "'";
             }
             else
             {

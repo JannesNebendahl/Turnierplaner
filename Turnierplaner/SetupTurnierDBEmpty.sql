@@ -46,7 +46,6 @@ CREATE TABLE Spiel
     Zuschaueranzahl         INTEGER,
     HeimmannschaftsId       INTEGER NOT NULL REFERENCES Mannschaften,
     AuswaertsmannschaftsId  INTEGER NOT NULL REFERENCES Mannschaften,
-    ErgebnisEingetragen     INTEGER NOT NULL
 );
 
 CREATE TABLE Trainer
