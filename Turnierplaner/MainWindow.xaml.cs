@@ -1560,16 +1560,18 @@ namespace Turnierplaner
                             "sum(CASE  WHEN(T.SpielID == S.Id AND T.Mannschaft == G.Id and T.Typ != 2) THEN 1 when(T.SpielID == S.Id AND T.Mannschaft == H.Id and T.Typ == 2) then 1 else 0 END) AS Ergebnis, " +
                             "S.Datum " +
                          "FROM Tor T, Spiel S, Mannschaften H, Mannschaften G " +
-                         "WHERE T.SpielID == S.Id " +
-                           "AND S.HeimmannschaftsId == H.Id " +
+                         "WHERE S.HeimmannschaftsId == H.Id " +
                            "AND S.AuswaertsmannschaftsId == G.Id ";
 
-            string[] sqlFilterSpiele = new string[3];
+            string[] sqlFilterSpiele = new string[4];
 
+            sqlFilterSpiele[2] = "";
+            sqlFilterSpiele[3] = "";
             if (tbxSpieleFilternToranzahl.Text != "")
             {
                 // TODO: Filter hinzufügen, der nur Spiele mit einer exakten Toranzahl durchlässt
-                sqlFilterSpiele[2] = " HAVING SUM(T.SpielID == S.Id) == " + tbxSpieleFilternToranzahl.Text;
+                sqlFilterSpiele[2] = " AND T.SpielID == S.Id ";
+                sqlFilterSpiele[3] = " HAVING SUM(T.SpielID == S.Id) == " + tbxSpieleFilternToranzahl.Text;
             }
 
             sqlFilterSpiele[0] = "";
@@ -1622,18 +1624,15 @@ namespace Turnierplaner
                 sqlFilterSpiele[1] += " ) ";
             }
 
+            int i = 0;
             foreach (string filter in sqlFilterSpiele)
             {
-                if (filter != null)
+                if (i == 3)
                 {
-                    
-
-                    if(filter == sqlFilterSpiele[2])
-                    {
-                        sql += " GROUP BY S.Id ";
-                    }
-                    sql += filter;
+                    sql += " GROUP BY S.Id ";
                 }
+                sql += filter;
+                i++;
             }
 
             sql += ";";
